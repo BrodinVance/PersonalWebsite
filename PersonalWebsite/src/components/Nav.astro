@@ -1,0 +1,79 @@
+---
+const pathname = Astro.url.pathname;
+---
+
+<nav class="fx" aria-label="Site navigation">
+  <div class="wrap nav-inner">
+    <a href="/" class="mark" aria-current={pathname === '/' ? 'page' : undefined}>Brodin Vance<span class="dot">.</span></a>
+    <div class="navlinks">
+      <a href="/writing"  aria-current={pathname.startsWith('/writing')  ? 'page' : undefined}>Writing</a>
+      <a href="/projects" aria-current={pathname.startsWith('/projects') ? 'page' : undefined}>Projects</a>
+      <a href="/about"    aria-current={pathname.startsWith('/about')    ? 'page' : undefined}>About</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  nav {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 1.6rem 0 1.4rem;
+  }
+
+  .mark {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+
+  .mark .dot {
+    color: var(--accent);
+  }
+
+  .navlinks {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .navlinks a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    transition: color 0.25s ease;
+  }
+
+  .navlinks a:hover,
+  .navlinks a:focus-visible {
+    color: var(--accent);
+  }
+
+  .navlinks a:focus-visible,
+  .mark:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .navlinks a[aria-current="page"] {
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-dim);
+    padding-bottom: 1px;
+  }
+
+  @media (max-width: 560px) {
+    .navlinks {
+      gap: 1rem;
+    }
+    .navlinks a {
+      font-size: 0.66rem;
+    }
+  }
+</style>

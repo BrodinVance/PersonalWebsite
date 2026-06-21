@@ -1,0 +1,296 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { TOPIC_LABELS } from '../../lib/topics';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('writing', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  );
+  const sorted = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+  return sorted.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev: sorted[i + 1] ?? null,
+      next: sorted[i - 1] ?? null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+
+const { title, description, date, topics } = post.data;
+const minutesRead: string | undefined = remarkPluginFrontmatter?.minutesRead;
+
+function formatDate(d: Date) {
+  return d.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout title={title} description={description} article>
+  <div class="wrap">
+    <article class="post">
+      <header class="post-header fx">
+        <div class="post-meta">
+          <time datetime={date.toISOString()}>
+            {formatDate(date)}
+          </time>
+          {minutesRead && <span class="sep">·</span>}
+          {minutesRead && <span>{minutesRead}</span>}
+          {topics.length > 0 && (
+            <span class="sep">·</span>
+          )}
+          {topics.map((topic, i) => (
+            <>
+              <a class="tag" href={`/writing/topics/${topic}`}>{TOPIC_LABELS[topic]}</a>
+              {i < topics.length - 1 && <span class="sep">,</span>}
+            </>
+          ))}
+        </div>
+        <h1>{title}</h1>
+        <p class="dek">{description}</p>
+      </header>
+
+      <TableOfContents headings={headings} minutesRead={minutesRead} />
+
+      <div class="prose fx d2">
+        <Content />
+      </div>
+
+      <nav class="post-nav" aria-label="Post navigation">
+        <div class="nav-prev">
+          {prev && (
+            <a href={`/writing/${prev.id}`}>
+              <span class="nav-label">← Older</span>
+              <span class="nav-title">{prev.data.title}</span>
+            </a>
+          )}
+        </div>
+        <div class="nav-next">
+          {next && (
+            <a href={`/writing/${next.id}`}>
+              <span class="nav-label">Newer →</span>
+              <span class="nav-title">{next.data.title}</span>
+            </a>
+          )}
+        </div>
+      </nav>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .post {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 3.5rem 0 5rem;
+  }
+
+  .post-header {
+    margin-bottom: 0;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+    margin-bottom: 1.25rem;
+  }
+
+  .sep {
+    color: var(--ink-faint);
+    opacity: 0.5;
+  }
+
+  .tag {
+    color: var(--accent-dim);
+    background: rgba(203, 142, 66, 0.09);
+    padding: 0.15em 0.45em;
+    border-radius: 2px;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .tag:hover,
+  .tag:focus-visible {
+    color: var(--accent);
+    background: rgba(203, 142, 66, 0.15);
+  }
+
+  .tag:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.7rem, 5vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.9rem;
+  }
+
+  .dek {
+    font-size: 1.1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  /* prose styles */
+  .prose {
+    margin-top: 2.5rem;
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .prose :global(h2) {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h3) {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-dim);
+    transition: border-color 0.2s;
+  }
+
+  .prose :global(a:hover),
+  .prose :global(a:focus-visible) {
+    border-color: var(--accent);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.4rem;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--accent-dim);
+    margin: 1.5rem 0;
+    padding: 0.25rem 1.25rem;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 2.5rem 0;
+  }
+
+  .prose :global(.footnotes) {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-soft);
+    font-size: 0.9rem;
+    color: var(--ink-dim);
+  }
+
+  .prose :global(.footnotes ol) {
+    padding-left: 1.25rem;
+  }
+
+  /* prev/next nav */
+  .post-nav {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line-soft);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-next {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .nav-prev a,
+  .nav-next a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .nav-prev a:focus-visible,
+  .nav-next a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .nav-title {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink-dim);
+    transition: color 0.2s;
+  }
+
+  .nav-prev a:hover .nav-title,
+  .nav-next a:hover .nav-title {
+    color: var(--accent);
+  }
+
+  @media (max-width: 560px) {
+    .post {
+      padding: 2.5rem 0 4rem;
+    }
+
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .nav-next {
+      text-align: left;
+      align-items: flex-start;
+    }
+  }
+</style>

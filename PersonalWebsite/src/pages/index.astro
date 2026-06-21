@@ -1,0 +1,490 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TOPIC_LABELS } from '../lib/topics';
+
+const allPosts = (
+  await getCollection('writing', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  )
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const latestPosts = allPosts.slice(0, 4);
+const newestPost = allPosts[0];
+
+const featuredProjects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.order - a.data.order);
+
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10).replace(/-/g, '·');
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  building: 'Building',
+  planned: 'Planned',
+  ongoing: 'Ongoing',
+  shipped: 'Shipped',
+};
+---
+
+<BaseLayout
+  title="Brodin Vance"
+  description="Math and physics student in Kitchener–Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning."
+>
+  <div class="wrap">
+
+    <header class="hero">
+      <h1 class="fx d1">Brodin Vance</h1>
+      <p class="lede fx d2">
+        Math and physics student in Kitchener&ndash;Waterloo. I build games and software,
+        cook more than is reasonable, and write here about whatever I&rsquo;m learning
+        &mdash; lately, mostly <em>quantum mechanics</em>.
+      </p>
+
+      <div class="currently fx d3">
+        <span class="label">Currently</span>
+        <ul>
+          <li><span>Working through Griffiths&rsquo; <b>Quantum Mechanics</b> (ch.&nbsp;3) and Axler&rsquo;s linear algebra</span></li>
+          <li><span>Building <b>Echo Hunt</b>, a movement-first roguelite in Godot</span></li>
+          <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
+        </ul>
+      </div>
+    </header>
+
+    {latestPosts.length > 0 && (
+      <section class="block" id="writing">
+        <div class="head">
+          <h2>Writing</h2>
+          {newestPost && (
+            <a class="meta-link" href={`/writing/${newestPost.id}`}>
+              Read the latest &rarr;
+            </a>
+          )}
+        </div>
+
+        <div class="log">
+          {latestPosts.map((post) => (
+            <article class="entry">
+              <div class="side">
+                <time datetime={post.data.date.toISOString()} class="date">{formatDate(post.data.date)}</time>
+                {post.data.topics[0] && (
+                  <a class="topic" href={`/writing/topics/${post.data.topics[0]}`}>
+                    {TOPIC_LABELS[post.data.topics[0]]}
+                  </a>
+                )}
+              </div>
+              <a href={`/writing/${post.id}`}>
+                <div>
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+
+        <div class="section-footer">
+          <a class="all-link" href="/writing">All writing &rarr;</a>
+        </div>
+      </section>
+    )}
+
+    {featuredProjects.length > 0 && (
+      <section class="block" id="projects">
+        <div class="head">
+          <h2>Projects</h2>
+          <a class="meta-link" href="/projects">All projects &rarr;</a>
+        </div>
+
+        <div class="proj">
+          {featuredProjects.map((project) => (
+            <article class="prow">
+              <div class="ptop">
+                <a href={`/projects/${project.id}`}>
+                  <h3>{project.data.title}</h3>
+                </a>
+                <span class:list={['status', project.data.status]}>
+                  {STATUS_LABELS[project.data.status]}
+                </span>
+                {project.data.stack.length > 0 && (
+                  <span class="stack">{project.data.stack.join(' · ')}</span>
+                )}
+              </div>
+              <p>{project.data.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+  </div>
+</BaseLayout>
+
+<style>
+  /* hero */
+  .hero {
+    padding: 5.5rem 0 4rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.7rem, 11vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.6rem;
+  }
+
+  .lede {
+    font-size: 1.22rem;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: var(--measure);
+  }
+
+  .lede em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .currently {
+    margin-top: 2.6rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    max-width: var(--measure);
+  }
+
+  .currently .label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .currently ul {
+    list-style: none;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .currently li {
+    display: flex;
+    gap: 0.85rem;
+    font-size: 1rem;
+    color: var(--ink-dim);
+    line-height: 1.45;
+  }
+
+  .currently li::before {
+    content: "·";
+    color: var(--accent-dim);
+    flex: none;
+    font-size: 1.15em;
+  }
+
+  .currently li b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* section frame */
+  .block {
+    padding: 3.4rem 0;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .meta-link {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    transition: color 0.2s;
+  }
+
+  .meta-link:hover,
+  .meta-link:focus-visible {
+    color: var(--accent);
+  }
+
+  .meta-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* writing log */
+  .log {
+    display: grid;
+    gap: 0;
+  }
+
+  .entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1.4rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--line-soft);
+    transition: background 0.2s ease;
+  }
+
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+
+  .entry:hover {
+    background: rgba(203, 142, 66, 0.03);
+  }
+
+  .entry:hover::before {
+    background: var(--accent-dim);
+  }
+
+  .entry:first-child {
+    border-top: none;
+  }
+
+  .side {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+    padding-top: 0.35rem;
+  }
+
+  .side .date {
+    display: block;
+  }
+
+  .side .topic {
+    display: block;
+    color: var(--accent-dim);
+    margin-top: 0.3rem;
+    transition: color 0.2s;
+  }
+
+  .side .topic:hover,
+  .side .topic:focus-visible {
+    color: var(--accent);
+  }
+
+  .side .topic:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  .entry h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.32rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.45rem;
+    transition: color 0.2s ease;
+  }
+
+  .entry a:hover h3,
+  .entry a:focus-visible h3 {
+    color: var(--accent);
+  }
+
+  .entry a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .entry p {
+    font-size: 1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    max-width: 32rem;
+  }
+
+  .section-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .all-link {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .all-link:hover,
+  .all-link:focus-visible {
+    color: var(--accent);
+  }
+
+  .all-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* projects */
+  .proj {
+    display: grid;
+    gap: 0;
+  }
+
+  .prow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--line-soft);
+    transition: background 0.2s ease;
+  }
+
+  .prow::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+
+  .prow:hover {
+    background: rgba(203, 142, 66, 0.03);
+  }
+
+  .prow:hover::before {
+    background: var(--accent-dim);
+  }
+
+  .prow:first-child {
+    border-top: none;
+  }
+
+  .ptop {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .prow h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+  }
+
+  .prow a:hover h3,
+  .prow a:focus-visible h3 {
+    color: var(--accent);
+  }
+
+  .prow a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .status {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .status.building {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  .status.ongoing {
+    color: var(--status-sage);
+    border-color: rgba(143, 169, 140, 0.35);
+  }
+
+  .stack {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .prow p {
+    font-size: 1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    max-width: 34rem;
+  }
+
+  /* mobile */
+  @media (max-width: 560px) {
+    .hero {
+      padding: 3.5rem 0 3rem;
+    }
+
+    .entry {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .side {
+      padding-top: 0;
+      display: flex;
+      gap: 0.8rem;
+      align-items: baseline;
+    }
+
+    .side .date {
+      display: inline;
+    }
+
+    .side .topic {
+      display: inline;
+      margin-top: 0;
+    }
+
+    .side .topic::before {
+      content: "· ";
+    }
+  }
+</style>

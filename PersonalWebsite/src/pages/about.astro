@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About"
+  description="About Brodin Vance — math student, game developer, and occasional cook based in Waterloo, Ontario."
+>
+  <div class="wrap">
+    <section class="about">
+      <div class="head">
+        <h1>About</h1>
+      </div>
+
+      <p>
+        I&rsquo;m working toward building quantum technology &mdash; somewhere near space,
+        communication, and sensing. I don&rsquo;t have the product yet; I have a direction
+        and a habit of building things until the direction sharpens.
+      </p>
+
+      <p class="muted">
+        Right now that means a math degree at Waterloo, a quantum-mechanics self-study track,
+        and a steady stream of side projects across software, games, and the occasional kitchen
+        experiment. This site is the logbook.
+      </p>
+
+      <div class="links">
+        <a href="https://github.com/BrodinVance">GitHub</a>
+        <a href="mailto:brodin.c.vance@gmail.com">Email</a>
+        <a href="/writing">Read the latest &rarr;</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    padding: 3.4rem 0 5rem;
+    max-width: var(--measure);
+  }
+
+  .head {
+    margin-bottom: 1.75rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 1.1rem;
+  }
+
+  p.muted {
+    color: var(--ink-dim);
+    font-size: 1rem;
+  }
+
+  .links {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+  }
+
+  .links a {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.15rem;
+    transition: all 0.2s ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  .links a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+</style>

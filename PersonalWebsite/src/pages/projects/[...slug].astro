@@ -1,0 +1,213 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const { title, description, status, stack, year, links } = project.data;
+
+const STATUS_LABELS: Record<string, string> = {
+  building: 'Building',
+  planned: 'Planned',
+  ongoing: 'Ongoing',
+  shipped: 'Shipped',
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="wrap">
+    <article class="project">
+      <header class="project-header fx">
+        <a class="back" href="/projects">← Projects</a>
+        <div class="ptop">
+          <h1>{title}</h1>
+          <span class:list={['status', status]}>{STATUS_LABELS[status]}</span>
+        </div>
+        {stack.length > 0 && (
+          <div class="stack">{stack.join(' · ')}</div>
+        )}
+        <p class="dek">{description}</p>
+
+        {(links.github || links.demo) && (
+          <div class="links">
+            {links.github && (
+              <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+            )}
+            {links.demo && (
+              <a href={links.demo} target="_blank" rel="noopener noreferrer">Demo</a>
+            )}
+          </div>
+        )}
+      </header>
+
+      <div class="prose fx d2">
+        <Content />
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .project {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 3.5rem 0 5rem;
+  }
+
+  .back {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+  }
+
+  .back:hover,
+  .back:focus-visible {
+    color: var(--accent);
+  }
+
+  .back:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  .ptop {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .status {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .status.building {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  .status.ongoing {
+    color: var(--status-sage);
+    border-color: rgba(143, 169, 140, 0.35);
+  }
+
+  .stack {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .dek {
+    font-size: 1.1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  .links {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .links a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.15rem;
+    transition: all 0.2s ease;
+  }
+
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  .links a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* prose */
+  .prose {
+    margin-top: 2.5rem;
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .prose :global(h2) {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h3) {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-dim);
+    transition: border-color 0.2s;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.4rem;
+  }
+</style>

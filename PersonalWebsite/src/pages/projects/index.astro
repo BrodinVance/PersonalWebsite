@@ -1,0 +1,176 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  if (a.data.order !== b.data.order) return b.data.order - a.data.order;
+  return b.data.year - a.data.year;
+});
+
+const STATUS_LABELS: Record<string, string> = {
+  building: 'Building',
+  planned: 'Planned',
+  ongoing: 'Ongoing',
+  shipped: 'Shipped',
+};
+---
+
+<BaseLayout title="Projects" description="Software, games, and experiments — things I'm building or have built.">
+  <div class="wrap">
+    <section class="projects-section">
+      <div class="head">
+        <h1>Projects</h1>
+        <span class="meta">Building in public</span>
+      </div>
+
+      <div class="proj">
+        {projects.map((project) => (
+          <article class="prow">
+            <div class="ptop">
+              <a href={`/projects/${project.id}`}>
+                <h2>{project.data.title}</h2>
+              </a>
+              <span class:list={['status', project.data.status]}>
+                {STATUS_LABELS[project.data.status]}
+              </span>
+              {project.data.stack.length > 0 && (
+                <span class="stack">{project.data.stack.join(' · ')}</span>
+              )}
+            </div>
+            <p>{project.data.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-section {
+    padding: 3.4rem 0;
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .proj {
+    display: grid;
+    gap: 0;
+  }
+
+  .prow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--line-soft);
+    transition: background 0.2s ease;
+  }
+
+  .prow::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+
+  .prow:hover {
+    background: rgba(203, 142, 66, 0.03);
+  }
+
+  .prow:hover::before {
+    background: var(--accent-dim);
+  }
+
+  .prow:first-child {
+    border-top: none;
+  }
+
+  .ptop {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .prow h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+  }
+
+  .prow a:hover h2,
+  .prow a:focus-visible h2 {
+    color: var(--accent);
+  }
+
+  .prow a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .status {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .status.building {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  .status.ongoing {
+    color: var(--status-sage);
+    border-color: rgba(143, 169, 140, 0.35);
+  }
+
+  .stack {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .prow p {
+    font-size: 1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    max-width: 34rem;
+  }
+</style>

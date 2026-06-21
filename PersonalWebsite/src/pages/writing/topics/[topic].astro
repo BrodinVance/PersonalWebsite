@@ -1,0 +1,174 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { TOPICS } from '../../../content.config';
+import { TOPIC_LABELS } from '../../../lib/topics';
+import type { Topic } from '../../../content.config';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('writing', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  );
+
+  return TOPICS.map((topic) => ({
+    params: { topic },
+    props: {
+      posts: allPosts
+        .filter((p) => p.data.topics.includes(topic))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+      label: TOPIC_LABELS[topic],
+    },
+  }));
+}
+
+const { topic } = Astro.params as { topic: Topic };
+const { posts, label } = Astro.props;
+
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10).replace(/-/g, '·');
+}
+---
+
+<BaseLayout
+  title={`${label} — Writing`}
+  description={`Posts tagged ${label} on Brodin Vance's site.`}
+>
+  <div class="wrap">
+    <section class="writing-section">
+      <div class="head">
+        <h1>{label}</h1>
+        <a class="back" href="/writing">← All writing</a>
+      </div>
+
+      <div class="log">
+        {posts.map((post) => (
+          <article class="entry">
+            <div class="side">
+              <span class="date">{formatDate(post.data.date)}</span>
+            </div>
+            <a href={`/writing/${post.id}`}>
+              <div>
+                <h2>{post.data.title}</h2>
+                <p>{post.data.description}</p>
+              </div>
+            </a>
+          </article>
+        ))}
+        {posts.length === 0 && (
+          <p class="empty">Nothing here yet.</p>
+        )}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .writing-section {
+    padding: 3.4rem 0;
+  }
+
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .back {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .back:hover,
+  .back:focus-visible {
+    color: var(--accent);
+  }
+
+  .back:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  .log {
+    display: grid;
+    gap: 0;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1.4rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .entry:first-child {
+    border-top: none;
+  }
+
+  .side {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    padding-top: 0.35rem;
+  }
+
+  .entry h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.32rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.45rem;
+    transition: color 0.2s ease;
+  }
+
+  .entry a:hover h2,
+  .entry a:focus-visible h2 {
+    color: var(--accent);
+  }
+
+  .entry a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .entry p {
+    font-size: 1rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    max-width: 32rem;
+  }
+
+  .empty {
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 560px) {
+    .entry {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .side {
+      padding-top: 0;
+    }
+  }
+</style>

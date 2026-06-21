@@ -1,0 +1,81 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  minutesRead?: string;
+}
+
+const { headings, minutesRead } = Astro.props;
+
+const filtered = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const minutes = minutesRead ? parseInt(minutesRead) : 0;
+
+const showTOC = filtered.length >= 3 || minutes >= 4;
+---
+
+{showTOC && filtered.length > 0 && (
+  <nav class="toc" aria-label="Table of contents">
+    <span class="toc-label">Contents</span>
+    <ol>
+      {filtered.map((h) => (
+        <li class:list={[{ 'depth-3': h.depth === 3 }]}>
+          <a href={`#${h.slug}`}>{h.text}</a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .toc {
+    margin: 2.5rem 0 2rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--bg-raise);
+  }
+
+  .toc-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+
+  ol {
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  li a {
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    transition: color 0.2s ease;
+  }
+
+  li a:hover,
+  li a:focus-visible {
+    color: var(--ink);
+  }
+
+  li a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  .depth-3 a {
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+  }
+</style>

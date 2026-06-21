@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brodin Vance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15120D;
+    --bg-raise:#1C1813;
+    --ink:#ECE3D4;
+    --ink-dim:#A89A85;
+    --ink-faint:#6E6453;
+    --accent:#CB8E42;
+    --accent-dim:#9C6B2F;
+    --line:rgba(236,227,212,0.09);
+    --line-soft:rgba(236,227,212,0.05);
+    --serif:"Fraunces",Georgia,serif;
+    --body:"Newsreader",Georgia,serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --measure:34rem;
+    --shell:46rem;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:18px;
+    line-height:1.6;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  /* matte grain overlay */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    pointer-events:none;
+    opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent-dim);color:var(--ink)}
+
+  .wrap{max-width:var(--shell);margin:0 auto;padding:0 1.5rem}
+
+  /* ---- nav ---- */
+  nav{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:1.6rem 0 1.4rem;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .mark{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:1.05rem;
+    letter-spacing:-.01em;
+  }
+  .mark .dot{color:var(--accent)}
+  .navlinks{display:flex;gap:1.4rem}
+  .navlinks a{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    transition:color .25s ease;
+  }
+  .navlinks a:hover{color:var(--accent)}
+
+  /* ---- hero ---- */
+  .hero{padding:5.5rem 0 4rem}
+  .hero h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(2.7rem,11vw,4.4rem);
+    line-height:1.02;
+    letter-spacing:-.02em;
+    margin-bottom:1.6rem;
+  }
+  .hero .lede{
+    font-size:1.22rem;
+    line-height:1.55;
+    color:var(--ink);
+    max-width:var(--measure);
+  }
+  .hero .lede em{font-style:italic;color:var(--accent)}
+
+  .currently{
+    margin-top:2.6rem;
+    padding-top:1.5rem;
+    border-top:1px solid var(--line);
+    max-width:var(--measure);
+  }
+  .currently .label{
+    font-family:var(--mono);
+    font-size:.68rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+    margin-bottom:1rem;
+  }
+  .currently ul{list-style:none;display:grid;gap:.7rem}
+  .currently li{
+    display:flex;gap:.85rem;
+    font-size:1rem;color:var(--ink-dim);
+    line-height:1.45;
+  }
+  .currently li::before{
+    content:"—";color:var(--ink-faint);flex:none;
+  }
+  .currently li b{color:var(--ink);font-weight:500}
+
+  /* ---- section frame ---- */
+  section.block{padding:3.4rem 0;border-top:1px solid var(--line-soft)}
+  .head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin-bottom:2rem;gap:1rem;
+  }
+  .head h2{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:1.5rem;
+    letter-spacing:-.01em;
+  }
+  .head .meta{
+    font-family:var(--mono);
+    font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+
+  /* ---- filter chips ---- */
+  .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.8rem}
+  .chip{
+    font-family:var(--mono);
+    font-size:.7rem;letter-spacing:.04em;
+    padding:.34rem .7rem;
+    border:1px solid var(--line);
+    border-radius:2px;
+    color:var(--ink-dim);
+    cursor:pointer;
+    background:transparent;
+    transition:all .2s ease;
+  }
+  .chip:hover{border-color:var(--ink-faint);color:var(--ink)}
+  .chip.on{border-color:var(--accent);color:var(--accent);background:rgba(203,142,66,0.06)}
+
+  /* ---- writing log ---- */
+  .log{display:grid;gap:0}
+  .entry{
+    display:grid;
+    grid-template-columns:7.5rem 1fr;
+    gap:1.4rem;
+    padding:1.5rem 0;
+    border-top:1px solid var(--line-soft);
+    transition:opacity .3s ease;
+  }
+  .entry:first-child{border-top:none}
+  .entry .side{
+    font-family:var(--mono);
+    font-size:.7rem;line-height:1.5;
+    color:var(--ink-faint);
+    padding-top:.35rem;
+  }
+  .entry .side .topic{display:block;color:var(--accent-dim);margin-top:.3rem}
+  .entry h3{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:1.32rem;
+    line-height:1.25;
+    letter-spacing:-.01em;
+    margin-bottom:.45rem;
+    transition:color .2s ease;
+  }
+  .entry a:hover h3{color:var(--accent)}
+  .entry p{font-size:1rem;color:var(--ink-dim);line-height:1.5;max-width:32rem}
+
+  /* ---- projects ---- */
+  .proj{
+    display:grid;gap:0;
+  }
+  .prow{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:.5rem;
+    padding:1.6rem 0;
+    border-top:1px solid var(--line-soft);
+  }
+  .prow:first-child{border-top:none}
+  .prow .ptop{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap}
+  .prow h3{
+    font-family:var(--serif);font-weight:500;font-size:1.3rem;
+    letter-spacing:-.01em;
+  }
+  .status{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
+    text-transform:uppercase;padding:.22rem .5rem;border-radius:2px;
+    border:1px solid var(--line);color:var(--ink-faint);
+  }
+  .status.building{color:var(--accent);border-color:var(--accent-dim)}
+  .status.ongoing{color:#8FA98C;border-color:rgba(143,169,140,.35)}
+  .stack{
+    font-family:var(--mono);font-size:.7rem;color:var(--ink-faint);
+    letter-spacing:.02em;
+  }
+  .prow p{font-size:1rem;color:var(--ink-dim);line-height:1.5;max-width:34rem}
+
+  /* ---- about / footer ---- */
+  .about{padding:3.4rem 0;border-top:1px solid var(--line-soft)}
+  .about p{font-size:1.1rem;line-height:1.65;max-width:var(--measure);color:var(--ink);margin-bottom:1.1rem}
+  .about p.muted{color:var(--ink-dim);font-size:1rem}
+  .links{
+    margin-top:2rem;display:flex;flex-wrap:wrap;gap:1.4rem;
+  }
+  .links a{
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;
+    color:var(--ink-dim);border-bottom:1px solid var(--line);
+    padding-bottom:.15rem;transition:all .2s ease;
+  }
+  .links a:hover{color:var(--accent);border-color:var(--accent-dim)}
+
+  footer{
+    padding:2.5rem 0 3.5rem;border-top:1px solid var(--line-soft);
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;
+    color:var(--ink-faint);text-transform:uppercase;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;
+  }
+
+  /* ---- load animation ---- */
+  .fx{opacity:0;transform:translateY(14px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  .fx.d1{animation-delay:.05s}
+  .fx.d2{animation-delay:.15s}
+  .fx.d3{animation-delay:.28s}
+  .fx.d4{animation-delay:.42s}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  @media (prefers-reduced-motion:reduce){
+    .fx{animation:none;opacity:1;transform:none}
+  }
+
+  /* ---- mobile ---- */
+  @media (max-width:560px){
+    body{font-size:17px}
+    .navlinks{gap:1rem}
+    .navlinks a{font-size:.66rem}
+    .hero{padding:3.5rem 0 3rem}
+    .entry{grid-template-columns:1fr;gap:.5rem}
+    .entry .side{padding-top:0;display:flex;gap:.8rem;align-items:baseline}
+    .entry .side .topic{display:inline;margin-top:0}
+    .entry .side .topic::before{content:"· "}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="fx">
+    <span class="mark">Brodin Vance<span class="dot">.</span></span>
+    <div class="navlinks">
+      <a href="#writing">Writing</a>
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <h1 class="fx d1">Brodin Vance</h1>
+    <p class="lede fx d2">Math and physics student in Kitchener&ndash;Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning &mdash; lately, mostly <em>quantum mechanics</em>.</p>
+
+    <div class="currently fx d3">
+      <span class="label">Currently</span>
+      <ul>
+        <li><span>Working through Griffiths' <b>Quantum Mechanics</b> (ch.&nbsp;3) and Axler's linear algebra</span></li>
+        <li><span>Building <b>Echo Hunt</b>, a movement-first roguelite in Godot</span></li>
+        <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="block" id="writing">
+    <div class="head">
+      <h2>Writing</h2>
+      <span class="meta">Weekly · notes &amp; essays</span>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="chip on" data-topic="all">All</button>
+      <button class="chip" data-topic="quantum">Quantum</button>
+      <button class="chip" data-topic="math">Math</button>
+      <button class="chip" data-topic="gamedev">Game Dev</button>
+      <button class="chip" data-topic="cooking">Cooking</button>
+    </div>
+
+    <div class="log" id="log">
+      <article class="entry" data-topic="quantum">
+        <div class="side">2026·06·15<span class="topic">Quantum</span></div>
+        <a href="#"><div>
+          <h3>Reading Griffiths, Chapter 3</h3>
+          <p>Hilbert space stopped being notation and started being a place. Notes on what finally made the formalism click.</p>
+        </div></a>
+      </article>
+
+      <article class="entry" data-topic="gamedev">
+        <div class="side">2026·06·08<span class="topic">Game Dev</span></div>
+        <a href="#"><div>
+          <h3>Designing the Mimic</h3>
+          <p>Echo Hunt's antagonist can't be killed. Here's how I'm making it feel inevitable instead of unfair.</p>
+        </div></a>
+      </article>
+
+      <article class="entry" data-topic="cooking">
+        <div class="side">2026·05·31<span class="topic">Cooking</span></div>
+        <a href="#"><div>
+          <h3>What mantecatura actually does</h3>
+          <p>The difference between a sauce that breaks and one that glosses is mostly physics. A short look at emulsification.</p>
+        </div></a>
+      </article>
+
+      <article class="entry" data-topic="math">
+        <div class="side">2026·05·24<span class="topic">Math</span></div>
+        <a href="#"><div>
+          <h3>Eigenvalues, without the hand-waving</h3>
+          <p>Working through Axler, where eigenvalues arrive late and on purpose. Why that ordering is the honest one.</p>
+        </div></a>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="head">
+      <h2>Projects</h2>
+      <span class="meta">Building in public</span>
+    </div>
+
+    <div class="proj">
+      <article class="prow">
+        <div class="ptop">
+          <h3>Echo Hunt</h3>
+          <span class="status building">Building</span>
+          <span class="stack">Godot 4 · GDScript</span>
+        </div>
+        <p>A movement-first open-world roguelite. You extract souls while an unkillable Mimic learns to hunt you &mdash; built around a resonance system that rewards skill expression.</p>
+      </article>
+
+      <article class="prow">
+        <div class="ptop">
+          <h3>BB84 Simulator</h3>
+          <span class="status">Planned</span>
+          <span class="stack">Python · NumPy</span>
+        </div>
+        <p>An interactive simulation of the BB84 quantum key distribution protocol, including eavesdropper detection. My first build at the quantum&ndash;software intersection.</p>
+      </article>
+
+      <article class="prow">
+        <div class="ptop">
+          <h3>Helioseismology Sonification</h3>
+          <span class="status">Planned</span>
+          <span class="stack">Python · SciPy</span>
+        </div>
+        <p>Turning real SDO/HMI solar oscillation data into sound &mdash; listening to the pressure modes ringing through the Sun's interior.</p>
+      </article>
+
+      <article class="prow">
+        <div class="ptop">
+          <h3>QM Foundations</h3>
+          <span class="status ongoing">Ongoing</span>
+          <span class="stack">Self-study</span>
+        </div>
+        <p>A 16-week run through Griffiths, Axler, and Boas. Public notes as I go, with the gaps left visible.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="head">
+      <h2>About</h2>
+    </div>
+    <p>I'm working toward building quantum technology &mdash; somewhere near space, communication, and sensing. I don't have the product yet; I have a direction and a habit of building things until the direction sharpens.</p>
+    <p class="muted">Right now that means a math degree at Waterloo, a quantum-mechanics self-study track, and a steady stream of side projects across software, games, and the occasional kitchen experiment. This site is the logbook.</p>
+    <div class="links">
+      <a href="#">GitHub</a>
+      <a href="#">Email</a>
+      <a href="#">Read the latest →</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>Brodin Vance — Waterloo, ON</span>
+    <span>Built with Astro</span>
+  </footer>
+
+</div>
+
+<script>
+  // topic filter — vanilla, no deps
+  (function(){
+    var filters = document.getElementById('filters');
+    var entries = Array.prototype.slice.call(document.querySelectorAll('#log .entry'));
+    if(!filters) return;
+    filters.addEventListener('click', function(e){
+      var btn = e.target.closest('.chip');
+      if(!btn) return;
+      var topic = btn.getAttribute('data-topic');
+      filters.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+      btn.classList.add('on');
+      entries.forEach(function(en){
+        var show = topic === 'all' || en.getAttribute('data-topic') === topic;
+        en.style.display = show ? '' : 'none';
+      });
+    });
+  })();
+</script>
+</body>
+</html>
