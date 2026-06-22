@@ -51,6 +51,9 @@ export const POST: APIRoute = async ({ locals, request }) => {
   const fileContent = serialize(data, body);
   let newSha: string | undefined;
 
+  const collectionLabel = collection === 'writing' ? 'Writing' : 'Project';
+  const commitMessage = `${collectionLabel} "${data.title}" Upload`;
+
   try {
     const result = await gh.saveEntry({
       collection,
@@ -58,7 +61,7 @@ export const POST: APIRoute = async ({ locals, request }) => {
       body: fileContent,
       // Only pass sha when updating the same file in place.
       sha: renamed ? undefined : sha,
-      message: `${sha && !renamed ? 'Update' : 'Create'} ${collection}/${filename}`,
+      message: commitMessage,
     });
     newSha = result.content?.sha;
 
