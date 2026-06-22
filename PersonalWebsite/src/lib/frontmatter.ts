@@ -1,4 +1,7 @@
-import yaml from 'js-yaml';
+// js-yaml is CommonJS; this interop works in both the Vite dev server and the
+// production Node ESM bundle (where a bare default import fails).
+import * as yamlNs from 'js-yaml';
+const yaml = (yamlNs as any).default ?? yamlNs;
 
 export interface Parsed {
   data: Record<string, any>;
@@ -23,6 +26,6 @@ export function serialize(data: Record<string, any>, body: string): string {
     if (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) continue;
     clean[k] = v;
   }
-  const yamlStr = yaml.dump(clean, { lineWidth: -1, quotingType: '"' });
+  const yamlStr = yaml.dump(clean, { lineWidth: -1, quotingType: '"' } as any);
   return `---\n${yamlStr}---\n\n${body.trim()}\n`;
 }
