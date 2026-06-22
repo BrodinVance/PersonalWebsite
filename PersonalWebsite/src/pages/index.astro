@@ -30,14 +30,14 @@ const STATUS_LABELS: Record<string, string> = {
 
 <BaseLayout
   title="Brodin Vance"
-  description="Math and physics student in Kitchener–Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning."
+  description="Honours Math student at the University of Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning."
 >
   <div class="wrap">
 
     <header class="hero">
       <h1 class="fx d1">Brodin Vance</h1>
       <p class="lede fx d2">
-        Math and physics student in Kitchener&ndash;Waterloo. I build games and software,
+        Honours Mathematics Student at University of Waterloo. I build games and software,
         cook more than is reasonable, and write here about whatever I&rsquo;m learning
         &mdash; lately, mostly <em>quantum mechanics</em>.
       </p>
@@ -45,8 +45,8 @@ const STATUS_LABELS: Record<string, string> = {
       <div class="currently fx d3">
         <span class="label">Currently</span>
         <ul>
-          <li><span>Working through Griffiths&rsquo; <b>Quantum Mechanics</b> (ch.&nbsp;3) and Axler&rsquo;s linear algebra</span></li>
-          <li><span>Building <b>Echo Hunt</b>, a movement-first roguelite in Godot</span></li>
+          <li><span>Working through Griffiths&rsquo; <b>Introduction to Quantum Mechanics 3rd Edition</b> (ch.&nbsp;3)</span></li>
+          <li><span>Building <b class="brine">BRINE</b>, a monster-hunter style fishing metroidvania in Godot</span></li>
           <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
         </ul>
       </div>
@@ -99,7 +99,10 @@ const STATUS_LABELS: Record<string, string> = {
 
         <div class="proj">
           {featuredProjects.map((project) => (
-            <article class="prow">
+            <article
+              class:list={['prow', { 'has-accent': project.data.accent }]}
+              style={project.data.accent ? `--accent: ${project.data.accent}; --accent-dim: ${project.data.accent};` : undefined}
+            >
               <div class="ptop">
                 <a href={`/projects/${project.id}`}>
                   <h3>{project.data.title}</h3>
@@ -189,6 +192,10 @@ const STATUS_LABELS: Record<string, string> = {
   .currently li b {
     color: var(--ink);
     font-weight: 500;
+  }
+
+  .currently li b.brine {
+    color: var(--brine);
   }
 
   /* section frame */
@@ -407,6 +414,10 @@ const STATUS_LABELS: Record<string, string> = {
     font-size: 1.3rem;
     letter-spacing: -0.01em;
     transition: color 0.2s;
+  }
+
+  .prow.has-accent h3 {
+    color: var(--accent);
   }
 
   .prow a:hover h3,

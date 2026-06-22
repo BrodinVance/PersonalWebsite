@@ -27,6 +27,7 @@ const projects = defineCollection({
     year: z.number(),
     featured: z.boolean().default(false),
     order: z.number().default(0),
+    accent: z.string().optional(),
     links: z
       .object({
         github: z.string().url().optional(),

@@ -26,7 +26,10 @@ const STATUS_LABELS: Record<string, string> = {
 
       <div class="proj">
         {projects.map((project) => (
-          <article class="prow">
+          <article
+            class:list={['prow', { 'has-accent': project.data.accent }]}
+            style={project.data.accent ? `--accent: ${project.data.accent}; --accent-dim: ${project.data.accent};` : undefined}
+          >
             <div class="ptop">
               <a href={`/projects/${project.id}`}>
                 <h2>{project.data.title}</h2>
@@ -125,6 +128,10 @@ const STATUS_LABELS: Record<string, string> = {
     font-size: 1.3rem;
     letter-spacing: -0.01em;
     transition: color 0.2s;
+  }
+
+  .prow.has-accent h2 {
+    color: var(--accent);
   }
 
   .prow a:hover h2,

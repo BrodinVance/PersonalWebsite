@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 
-const { title, description, status, stack, year, links } = project.data;
+const { title, description, status, stack, year, links, accent } = project.data;
 
 const STATUS_LABELS: Record<string, string> = {
   building: 'Building',
@@ -25,7 +25,10 @@ const STATUS_LABELS: Record<string, string> = {
 
 <BaseLayout title={title} description={description}>
   <div class="wrap">
-    <article class="project">
+    <article
+      class:list={['project', { 'has-accent': accent }]}
+      style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
+    >
       <header class="project-header fx">
         <a class="back" href="/projects">← Projects</a>
         <div class="ptop">
@@ -99,6 +102,10 @@ const STATUS_LABELS: Record<string, string> = {
     font-size: clamp(1.7rem, 5vw, 2.4rem);
     line-height: 1.1;
     letter-spacing: -0.02em;
+  }
+
+  .has-accent h1 {
+    color: var(--accent);
   }
 
   .status {
