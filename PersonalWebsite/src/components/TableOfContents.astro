@@ -19,17 +19,60 @@ const showTOC = filtered.length >= 3 || minutes >= 4;
 ---
 
 {showTOC && filtered.length > 0 && (
-  <nav class="toc" aria-label="Table of contents">
+  <nav class="toc" aria-label="Table of contents" data-toc>
     <span class="toc-label">Contents</span>
     <ol>
       {filtered.map((h) => (
         <li class:list={[{ 'depth-3': h.depth === 3 }]}>
-          <a href={`#${h.slug}`}>{h.text}</a>
+          <a href={`#${h.slug}`} data-toc-link={h.slug}>{h.text}</a>
         </li>
       ))}
     </ol>
   </nav>
 )}
+
+<script>
+  (function () {
+    const toc = document.querySelector('[data-toc]');
+    if (!toc) return;
+
+    const links = Array.from(
+      toc.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')
+    );
+    const ids = links.map((l) => l.getAttribute('data-toc-link') ?? '');
+    const headings = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (headings.length === 0) return;
+
+    let current = '';
+
+    function setActive(id: string) {
+      if (id === current) return;
+      current = id;
+      links.forEach((link) => {
+        link.classList.toggle(
+          'active',
+          link.getAttribute('data-toc-link') === id
+        );
+      });
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+  })();
+</script>
 
 <style>
   .toc {
@@ -57,14 +100,37 @@ const showTOC = filtered.length >= 3 || minutes >= 4;
   }
 
   li a {
+    display: inline-block;
+    position: relative;
     font-size: 0.95rem;
     color: var(--ink-dim);
+    padding-left: 0.7rem;
     transition: color 0.2s ease;
+  }
+
+  li a::before {
+    content: '';
+    position: absolute;
+    left: -0.05rem;
+    top: 0.15em;
+    bottom: 0.15em;
+    width: 2px;
+    background: transparent;
+    border-radius: 1px;
+    transition: background 0.2s ease;
   }
 
   li a:hover,
   li a:focus-visible {
     color: var(--ink);
+  }
+
+  li a.active {
+    color: var(--accent);
+  }
+
+  li a.active::before {
+    background: var(--accent);
   }
 
   li a:focus-visible {
@@ -74,7 +140,7 @@ const showTOC = filtered.length >= 3 || minutes >= 4;
   }
 
   .depth-3 a {
-    padding-left: 1rem;
+    margin-left: 1rem;
     font-size: 0.9rem;
     color: var(--ink-faint);
   }
