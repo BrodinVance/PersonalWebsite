@@ -190,12 +190,15 @@ function formatDate(d: Date) {
   }
 
   h1 {
+    display: inline-block;
     font-family: var(--serif);
     font-weight: 400;
     font-size: clamp(1.7rem, 5vw, 2.5rem);
     line-height: 1.1;
     letter-spacing: -0.02em;
     margin-bottom: 0.9rem;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 0.25rem;
   }
 
   .dek {
@@ -213,12 +216,23 @@ function formatDate(d: Date) {
   }
 
   .prose :global(h2) {
+    display: inline-block;
     font-family: var(--serif);
     font-weight: 500;
     font-size: 1.35rem;
     letter-spacing: -0.01em;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h2)::after {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-top: 0.4rem;
+    background: var(--accent);
+    border-radius: 1px;
   }
 
   .prose :global(h3) {

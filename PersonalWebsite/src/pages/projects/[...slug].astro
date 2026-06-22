@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -11,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { Content } = await render(project);
+const { Content, headings } = await render(project);
 
 const { title, description, status, stack, year, links, accent } = project.data;
 
@@ -51,6 +52,8 @@ const STATUS_LABELS: Record<string, string> = {
           </div>
         )}
       </header>
+
+      <TableOfContents headings={headings} />
 
       <div class="prose fx d2">
         <Content />
@@ -102,6 +105,8 @@ const STATUS_LABELS: Record<string, string> = {
     font-size: clamp(1.7rem, 5vw, 2.4rem);
     line-height: 1.1;
     letter-spacing: -0.02em;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 0.25rem;
   }
 
   .has-accent h1 {
@@ -181,12 +186,23 @@ const STATUS_LABELS: Record<string, string> = {
   }
 
   .prose :global(h2) {
+    display: inline-block;
     font-family: var(--serif);
     font-weight: 500;
     font-size: 1.35rem;
     letter-spacing: -0.01em;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h2)::after {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-top: 0.4rem;
+    background: var(--accent);
+    border-radius: 1px;
   }
 
   .prose :global(h3) {
