@@ -92,6 +92,11 @@ a {
   border: 0;
 }
 
+/* Each extra blank line in a post's source becomes one of these spacers. */
+.md-space {
+  height: 1.4rem;
+}
+
 /* page-load rise */
 .fx {
   opacity: 0;

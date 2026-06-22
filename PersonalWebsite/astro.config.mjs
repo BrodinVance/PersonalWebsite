@@ -8,6 +8,7 @@ import vercel from '@astrojs/vercel';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { remarkReadingTime } from './src/lib/remark-reading-time.mjs';
+import { remarkBlankLineSpacing } from './src/lib/remark-blank-line-spacing.mjs';
 
 export default defineConfig({
   site: 'https://brodinvance.com',
@@ -18,7 +19,7 @@ export default defineConfig({
   integrations: [mdx(), react(), sitemap()],
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkMath, remarkReadingTime],
+      remarkPlugins: [remarkMath, remarkReadingTime, remarkBlankLineSpacing],
       rehypePlugins: [rehypeKatex],
     }),
     shikiConfig: {

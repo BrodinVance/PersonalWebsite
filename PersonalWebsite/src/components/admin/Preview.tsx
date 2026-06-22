@@ -7,12 +7,15 @@ import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
 import type { CSSProperties } from 'react';
+import { remarkBlankLineSpacing } from '../../lib/remark-blank-line-spacing.mjs';
 
-// Mirrors the production pipeline (remark-math + rehype-katex) plus rehype-raw
-// so inline <span style="color:…"> renders exactly as it will on the live post.
+// Mirrors the production pipeline (remark-math + blank-line spacing + rehype-katex)
+// plus rehype-raw so inline <span style="color:…"> and blank-line spacers render
+// exactly as they will on the live post.
 const processor = unified()
   .use(remarkParse)
   .use(remarkMath)
+  .use(remarkBlankLineSpacing)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
   .use(rehypeKatex)
