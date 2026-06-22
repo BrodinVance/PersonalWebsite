@@ -1,0 +1,11 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Editor from '../../components/admin/Editor.tsx';
+---
+
+<BaseLayout title="Editor" description="Site editor">
+  <div class="wrap">
+    <Editor client:only="react" />
+  </div>
+</BaseLayout>

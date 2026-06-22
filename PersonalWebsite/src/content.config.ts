@@ -13,6 +13,7 @@ const writing = defineCollection({
       date: z.coerce.date(),
       topics: z.array(z.enum(TOPICS)).default([]),
       draft: z.boolean().default(false),
+      accent: z.string().optional(),
       cover: image().optional(),
     }),
 });

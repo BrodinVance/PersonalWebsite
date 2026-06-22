@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 const { post, prev, next } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
 
-const { title, description, date, topics, cover } = post.data;
+const { title, description, date, topics, cover, accent } = post.data;
 const minutesRead: string | undefined = remarkPluginFrontmatter?.minutesRead;
 
 function formatDate(d: Date) {
@@ -35,7 +35,11 @@ function formatDate(d: Date) {
 <BaseLayout title={title} description={description} article>
   <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
   <div class="wrap">
-    <article class="post" id="post-article">
+    <article
+      id="post-article"
+      class:list={['post', { 'has-accent': accent }]}
+      style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
+    >
       <header class="post-header fx">
         <div class="post-meta">
           <time datetime={date.toISOString()}>
@@ -199,6 +203,10 @@ function formatDate(d: Date) {
     margin-bottom: 0.9rem;
     border-bottom: 1px solid var(--accent);
     padding-bottom: 0.25rem;
+  }
+
+  .has-accent h1 {
+    color: var(--accent);
   }
 
   .dek {
