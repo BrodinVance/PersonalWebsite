@@ -100,6 +100,38 @@ export default function Editor() {
     window.setTimeout(() => setToast(''), 5000);
   }
 
+  async function remove() {
+    if (!entry?.filename) return;
+    const name = entry.data.title || entry.slug || entry.filename;
+    if (!window.confirm(`Delete "${name}"? This permanently removes the file.`)) return;
+    setBusy(true);
+    try {
+      const res = await fetch('/api/content/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          collection,
+          filename: entry.filename,
+          sha: entry.sha,
+          title: entry.data.title,
+        }),
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        flashToast(j.error ?? 'Delete failed');
+        return;
+      }
+      setView('list');
+      setEntry(null);
+      loadList(collection);
+      flashToast(`Deleted ${name}${j.deployTriggered ? ' · deploy triggered' : ''}`);
+    } catch {
+      flashToast('Delete failed');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function save(publishOverride?: boolean) {
     if (!entry) return;
     if (!entry.data.title?.trim()) {
@@ -224,6 +256,11 @@ export default function Editor() {
           </div>
 
           <div className="adm-actions">
+            {entry.filename && (
+              <button type="button" className="adm-danger" disabled={busy} onClick={remove}>
+                Delete
+              </button>
+            )}
             {collection === 'writing' ? (
               <>
                 <button type="button" className="adm-ghost" disabled={busy} onClick={() => save(false)}>

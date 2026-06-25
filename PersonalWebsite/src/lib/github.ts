@@ -78,13 +78,18 @@ export function createGitHub(token: string) {
     return res.data;
   }
 
-  async function deleteEntry(collection: Collection, filename: string, sha: string) {
+  async function deleteEntry(
+    collection: Collection,
+    filename: string,
+    sha: string,
+    message?: string
+  ) {
     const path = `${CONTENT_ROOT}/${collection}/${filename}`;
     await octokit.repos.deleteFile({
       owner,
       repo,
       path,
-      message: `Delete ${path}`,
+      message: message ?? `Delete ${path}`,
       sha,
       branch,
     });

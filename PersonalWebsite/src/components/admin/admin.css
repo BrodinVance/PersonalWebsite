@@ -410,6 +410,32 @@
   margin-top: 1.5rem;
 }
 
+/* destructive action: pushed to the far left, away from save/publish */
+.adm-danger {
+  margin-right: auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid rgba(197, 107, 92, 0.5);
+  border-radius: 2px;
+  color: #c56b5c;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-danger:hover {
+  background: rgba(197, 107, 92, 0.12);
+  border-color: #c56b5c;
+}
+
+.adm-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* modular links field */
 .adm-links {
   display: flex;
