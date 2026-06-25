@@ -205,6 +205,7 @@ export default function Editor() {
       {view === 'edit' && entry && (
         <section className="adm-edit">
           <FrontmatterForm
+            key={`${collection}:${entry.filename ?? 'new'}`}
             collection={collection}
             data={entry.data}
             onChange={(data) => setEntry((e) => (e ? { ...e, data } : e))}

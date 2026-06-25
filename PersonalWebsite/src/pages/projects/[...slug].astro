@@ -22,6 +22,16 @@ const STATUS_LABELS: Record<string, string> = {
   ongoing: 'Ongoing',
   shipped: 'Shipped',
 };
+
+const LINK_LABELS: Record<string, string> = {
+  github: 'GitHub',
+  demo: 'Demo',
+};
+function linkLabel(name: string) {
+  return LINK_LABELS[name.toLowerCase()] ?? name;
+}
+
+const linkEntries = Object.entries(links).filter(([, url]) => url);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -41,14 +51,11 @@ const STATUS_LABELS: Record<string, string> = {
         )}
         <p class="dek">{description}</p>
 
-        {(links.github || links.demo) && (
+        {linkEntries.length > 0 && (
           <div class="links">
-            {links.github && (
-              <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub</a>
-            )}
-            {links.demo && (
-              <a href={links.demo} target="_blank" rel="noopener noreferrer">Demo</a>
-            )}
+            {linkEntries.map(([name, url]) => (
+              <a href={url} target="_blank" rel="noopener noreferrer">{linkLabel(name)}</a>
+            ))}
           </div>
         )}
       </header>

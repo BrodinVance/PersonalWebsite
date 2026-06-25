@@ -5,7 +5,21 @@ import Editor from '../../components/admin/Editor.tsx';
 ---
 
 <BaseLayout title="Editor" description="Site editor">
-  <div class="wrap">
+  <div class="admin-shell">
     <Editor client:only="react" />
   </div>
 </BaseLayout>
+
+<style>
+  .admin-shell {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .admin-shell {
+      padding: 0 1rem;
+    }
+  }
+</style>

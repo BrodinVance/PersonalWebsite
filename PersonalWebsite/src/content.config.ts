@@ -29,12 +29,8 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     order: z.number().default(0),
     accent: z.string().optional(),
-    links: z
-      .object({
-        github: z.string().url().optional(),
-        demo: z.string().url().optional(),
-      })
-      .default({}),
+    // Arbitrary named links (e.g. github, demo, "Trello", "Devlog").
+    links: z.record(z.string(), z.string()).default({}),
   }),
 });
 

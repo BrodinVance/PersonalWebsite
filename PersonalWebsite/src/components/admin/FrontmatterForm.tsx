@@ -1,4 +1,5 @@
 import { AccentPicker } from './AccentPicker';
+import { LinksField } from './LinksField';
 
 const TOPICS = ['quantum', 'math', 'gamedev', 'cooking'];
 const STATUSES = ['building', 'planned', 'ongoing', 'shipped'];
@@ -13,8 +14,6 @@ export function FrontmatterForm({
   onChange: (d: Record<string, any>) => void;
 }) {
   const set = (k: string, v: any) => onChange({ ...data, [k]: v });
-  const setLink = (k: string, v: any) =>
-    onChange({ ...data, links: { ...(data.links || {}), [k]: v } });
 
   return (
     <div className="adm-form">
@@ -140,21 +139,10 @@ export function FrontmatterForm({
             />
           </label>
 
-          <label className="adm-field">
-            <span>GitHub URL</span>
-            <input
-              value={data.links?.github || ''}
-              onChange={(e) => setLink('github', e.target.value)}
-            />
-          </label>
-
-          <label className="adm-field">
-            <span>Demo URL</span>
-            <input
-              value={data.links?.demo || ''}
-              onChange={(e) => setLink('demo', e.target.value)}
-            />
-          </label>
+          <div className="adm-field">
+            <span>Links</span>
+            <LinksField value={data.links || {}} onChange={(v) => set('links', v)} />
+          </div>
         </>
       )}
 

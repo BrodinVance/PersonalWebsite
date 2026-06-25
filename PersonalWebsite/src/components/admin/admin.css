@@ -282,7 +282,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   align-items: stretch;
-  min-height: 28rem;
+  height: 76vh;
+  min-height: 32rem;
 }
 
 .adm-editor-col {
@@ -326,7 +327,7 @@
 
 .adm-cm {
   flex: 1;
-  min-height: 24rem;
+  min-height: 18rem;
   overflow: auto;
 }
 
@@ -357,9 +358,9 @@
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--bg);
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 2rem;
   overflow: auto;
-  max-height: 40rem;
+  height: 100%;
 }
 
 /* preview prose tweaks (relies on global .prose-like rules being absent here,
@@ -409,8 +410,73 @@
   margin-top: 1.5rem;
 }
 
+/* modular links field */
+.adm-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.adm-link-row {
+  display: grid;
+  grid-template-columns: 12rem 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.adm-link-remove {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink-faint);
+  font-size: 1.1rem;
+  line-height: 1;
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-link-remove:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
+.adm-link-add {
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink-dim);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-link-add:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
 @media (max-width: 760px) {
   .adm-panes {
     grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .adm-cm {
+    min-height: 50vh;
+  }
+
+  .adm-preview {
+    height: auto;
+    min-height: 50vh;
+  }
+
+  .adm-link-row {
+    grid-template-columns: 1fr 1fr auto;
   }
 }
