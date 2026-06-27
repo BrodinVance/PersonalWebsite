@@ -405,14 +405,20 @@
 /* actions */
 .adm-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
 
-/* destructive action: pushed to the far left, away from save/publish */
+.adm-actions-left,
+.adm-actions-right {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* destructive action: grouped at the far left, away from save/publish */
 .adm-danger {
-  margin-right: auto;
   font-family: var(--mono);
   font-size: 0.72rem;
   letter-spacing: 0.04em;

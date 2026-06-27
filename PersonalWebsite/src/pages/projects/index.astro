@@ -2,7 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const projects = (await getCollection('projects')).sort((a, b) => {
+const projects = (
+  await getCollection('projects', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  )
+).sort((a, b) => {
   if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
   if (a.data.order !== b.data.order) return b.data.order - a.data.order;
   return b.data.year - a.data.year;

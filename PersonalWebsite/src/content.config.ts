@@ -27,6 +27,7 @@ const projects = defineCollection({
     stack: z.array(z.string()).default([]),
     year: z.number(),
     featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
     order: z.number().default(0),
     accent: z.string().optional(),
     // Arbitrary named links (e.g. github, demo, "Trello", "Devlog").

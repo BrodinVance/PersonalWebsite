@@ -132,16 +132,10 @@ export default function Editor() {
     }
   }
 
-  async function save(publishOverride?: boolean) {
-    if (!entry) return;
-    if (!entry.data.title?.trim()) {
-      flashToast('A title is required.');
-      return;
-    }
-    const data = { ...entry.data };
-    if (collection === 'writing' && typeof publishOverride === 'boolean') {
-      data.draft = !publishOverride;
-    }
+  // Commit the given frontmatter data + current body. Returns the API result
+  // on success, or null on failure (toast already shown).
+  async function persist(data: Record<string, any>): Promise<any | null> {
+    if (!entry) return null;
     setBusy(true);
     try {
       const res = await fetch('/api/content/save', {
@@ -159,17 +153,43 @@ export default function Editor() {
       const j = await res.json();
       if (!res.ok) {
         flashToast(j.error ?? 'Save failed');
-        return;
+        return null;
       }
       // Update local state so further saves target the right file/sha.
       setEntry((e) =>
         e ? { ...e, data, slug: j.slug, filename: j.filename, sha: j.sha } : e
       );
-      flashToast(`Saved ${j.filename}${j.deployTriggered ? ' · deploy triggered' : ''}`);
+      return j;
     } catch {
       flashToast('Save failed');
+      return null;
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function save(publishOverride?: boolean) {
+    if (!entry) return;
+    if (!entry.data.title?.trim()) {
+      flashToast('A title is required.');
+      return;
+    }
+    const data = { ...entry.data };
+    if (collection === 'writing' && typeof publishOverride === 'boolean') {
+      data.draft = !publishOverride;
+    }
+    const j = await persist(data);
+    if (j) flashToast(`Saved ${j.filename}${j.deployTriggered ? ' · deploy triggered' : ''}`);
+  }
+
+  async function toggleHidden() {
+    if (!entry?.filename) return;
+    const nextHidden = !entry.data.draft;
+    const j = await persist({ ...entry.data, draft: nextHidden });
+    if (j) {
+      flashToast(
+        `${nextHidden ? 'Hidden from the site' : 'Now public'}${j.deployTriggered ? ' · deploy triggered' : ''}`
+      );
     }
   }
 
@@ -222,7 +242,7 @@ export default function Editor() {
                 <button type="button" onClick={() => openEntry(it.slug)}>
                   <span className="adm-entry-title">{it.data.title || it.slug}</span>
                   <span className="adm-entry-meta">
-                    {it.data.draft ? 'draft · ' : ''}
+                    {it.data.draft ? 'hidden · ' : ''}
                     {it.data.date || it.data.status || ''}
                     {' · '}
                     {it.filename}
@@ -256,25 +276,34 @@ export default function Editor() {
           </div>
 
           <div className="adm-actions">
-            {entry.filename && (
-              <button type="button" className="adm-danger" disabled={busy} onClick={remove}>
-                Delete
-              </button>
-            )}
-            {collection === 'writing' ? (
-              <>
-                <button type="button" className="adm-ghost" disabled={busy} onClick={() => save(false)}>
-                  Save draft
+            <div className="adm-actions-left">
+              {entry.filename && (
+                <button type="button" className="adm-danger" disabled={busy} onClick={remove}>
+                  Delete
                 </button>
-                <button type="button" className="adm-primary" disabled={busy} onClick={() => save(true)}>
-                  Publish
+              )}
+              {entry.filename && (
+                <button type="button" className="adm-ghost" disabled={busy} onClick={toggleHidden}>
+                  {entry.data.draft ? 'Make public' : 'Hide'}
                 </button>
-              </>
-            ) : (
-              <button type="button" className="adm-primary" disabled={busy} onClick={() => save()}>
-                Save
-              </button>
-            )}
+              )}
+            </div>
+            <div className="adm-actions-right">
+              {collection === 'writing' ? (
+                <>
+                  <button type="button" className="adm-ghost" disabled={busy} onClick={() => save(false)}>
+                    Save draft
+                  </button>
+                  <button type="button" className="adm-primary" disabled={busy} onClick={() => save(true)}>
+                    Publish
+                  </button>
+                </>
+              ) : (
+                <button type="button" className="adm-primary" disabled={busy} onClick={() => save()}>
+                  Save
+                </button>
+              )}
+            </div>
           </div>
         </section>
       )}

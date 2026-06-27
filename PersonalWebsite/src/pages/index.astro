@@ -12,7 +12,11 @@ const allPosts = (
 const latestPosts = allPosts.slice(0, 4);
 const newestPost = allPosts[0];
 
-const featuredProjects = (await getCollection('projects'))
+const featuredProjects = (
+  await getCollection('projects', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  )
+)
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.order - a.data.order);
 
