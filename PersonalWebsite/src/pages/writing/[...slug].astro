@@ -133,7 +133,7 @@ function formatDate(d: Date) {
     background: var(--accent);
     transform: scaleX(0);
     transform-origin: 0 50%;
-    z-index: 10001;
+    z-index: var(--z-progress);
     will-change: transform;
   }
 
@@ -214,93 +214,6 @@ function formatDate(d: Date) {
     color: var(--ink-dim);
     line-height: 1.5;
     margin-bottom: 0;
-  }
-
-  /* prose styles */
-  .prose {
-    margin-top: 2.5rem;
-    font-size: 1.05rem;
-    line-height: 1.75;
-  }
-
-  .prose :global(h2) {
-    display: inline-block;
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.35rem;
-    letter-spacing: -0.01em;
-    margin-top: 2.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .prose :global(h2)::after {
-    content: '';
-    display: block;
-    width: 2.25rem;
-    height: 2px;
-    margin-top: 0.4rem;
-    background: var(--accent);
-    border-radius: 1px;
-  }
-
-  .prose :global(h3) {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.1rem;
-    letter-spacing: -0.01em;
-    margin-top: 2rem;
-    margin-bottom: 0.6rem;
-  }
-
-  .prose :global(p) {
-    margin-bottom: 1.25rem;
-  }
-
-  .prose :global(a) {
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent-dim);
-    transition: border-color 0.2s;
-  }
-
-  .prose :global(a:hover),
-  .prose :global(a:focus-visible) {
-    border-color: var(--accent);
-  }
-
-  .prose :global(ul),
-  .prose :global(ol) {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .prose :global(li) {
-    margin-bottom: 0.4rem;
-  }
-
-  .prose :global(blockquote) {
-    border-left: 2px solid var(--accent-dim);
-    margin: 1.5rem 0;
-    padding: 0.25rem 1.25rem;
-    color: var(--ink-dim);
-    font-style: italic;
-  }
-
-  .prose :global(hr) {
-    border: none;
-    border-top: 1px solid var(--line);
-    margin: 2.5rem 0;
-  }
-
-  .prose :global(.footnotes) {
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line-soft);
-    font-size: 0.9rem;
-    color: var(--ink-dim);
-  }
-
-  .prose :global(.footnotes ol) {
-    padding-left: 1.25rem;
   }
 
   /* prev/next nav */

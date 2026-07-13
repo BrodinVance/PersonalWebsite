@@ -42,17 +42,38 @@ const pathname = Astro.url.pathname;
   }
 
   .navlinks a {
+    position: relative;
     font-family: var(--mono);
     font-size: 0.72rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--ink-dim);
-    transition: color 0.25s ease;
+    padding-bottom: 2px;
+    transition: color var(--dur) ease;
+  }
+
+  /* Underline draws in from the left on hover; sits at full width when active. */
+  .navlinks a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--dur) var(--ease-out-quint);
   }
 
   .navlinks a:hover,
   .navlinks a:focus-visible {
     color: var(--accent);
+  }
+
+  .navlinks a:hover::after,
+  .navlinks a:focus-visible::after {
+    transform: scaleX(1);
   }
 
   .navlinks a:focus-visible,
@@ -64,8 +85,17 @@ const pathname = Astro.url.pathname;
 
   .navlinks a[aria-current="page"] {
     color: var(--accent);
-    border-bottom: 1px solid var(--accent-dim);
-    padding-bottom: 1px;
+  }
+
+  .navlinks a[aria-current="page"]::after {
+    background: var(--accent-dim);
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navlinks a::after {
+      transition: none;
+    }
   }
 
   @media (max-width: 560px) {

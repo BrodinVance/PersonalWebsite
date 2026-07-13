@@ -55,7 +55,7 @@ const STATUS_LABELS: Record<string, string> = {
     </header>
 
     {latestPosts.length > 0 && (
-      <section class="block" id="writing">
+      <section class="block" id="writing" data-reveal>
         <div class="head">
           <h2>Writing</h2>
           {newestPost && (
@@ -93,7 +93,7 @@ const STATUS_LABELS: Record<string, string> = {
     )}
 
     {featuredProjects.length > 0 && (
-      <section class="block" id="projects">
+      <section class="block" id="projects" data-reveal>
         <div class="head">
           <h2>Projects</h2>
           <a class="meta-link" href="/projects">All projects &rarr;</a>
@@ -241,103 +241,6 @@ const STATUS_LABELS: Record<string, string> = {
     border-radius: 1px;
   }
 
-  /* writing log */
-  .log {
-    display: grid;
-    gap: 0;
-  }
-
-  .entry {
-    position: relative;
-    display: grid;
-    grid-template-columns: 7.5rem 1fr;
-    gap: 1.4rem;
-    padding: 1.5rem 0;
-    border-top: 1px solid var(--line-soft);
-    transition: background 0.2s ease;
-  }
-
-  .entry::before {
-    content: '';
-    position: absolute;
-    left: -1rem;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: transparent;
-    transition: background 0.2s ease;
-  }
-
-  .entry:hover {
-    background: rgba(203, 142, 66, 0.03);
-  }
-
-  .entry:hover::before {
-    background: var(--accent-dim);
-  }
-
-  .entry:first-child {
-    border-top: none;
-  }
-
-  .side {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    line-height: 1.5;
-    color: var(--ink-faint);
-    padding-top: 0.35rem;
-  }
-
-  .side .date {
-    display: block;
-  }
-
-  .side .topic {
-    display: block;
-    color: var(--accent-dim);
-    margin-top: 0.3rem;
-    transition: color 0.2s;
-  }
-
-  .side .topic:hover,
-  .side .topic:focus-visible {
-    color: var(--accent);
-  }
-
-  .side .topic:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: 1px;
-  }
-
-  .entry h3 {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.32rem;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    margin-bottom: 0.45rem;
-    transition: color 0.2s ease;
-  }
-
-  .entry a:hover h3,
-  .entry a:focus-visible h3 {
-    color: var(--accent);
-  }
-
-  .entry a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-    border-radius: 1px;
-  }
-
-  .entry p {
-    font-size: 1rem;
-    color: var(--ink-dim);
-    line-height: 1.5;
-    max-width: 32rem;
-  }
-
   .section-footer {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
@@ -364,140 +267,10 @@ const STATUS_LABELS: Record<string, string> = {
     border-radius: 1px;
   }
 
-  /* projects */
-  .proj {
-    display: grid;
-    gap: 0;
-  }
-
-  .prow {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    padding: 1.6rem 0;
-    border-top: 1px solid var(--line-soft);
-    transition: background 0.2s ease;
-  }
-
-  .prow::before {
-    content: '';
-    position: absolute;
-    left: -1rem;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: transparent;
-    transition: background 0.2s ease;
-  }
-
-  .prow:hover {
-    background: rgba(203, 142, 66, 0.03);
-  }
-
-  .prow:hover::before {
-    background: var(--accent-dim);
-  }
-
-  .prow:first-child {
-    border-top: none;
-  }
-
-  .ptop {
-    display: flex;
-    align-items: baseline;
-    gap: 0.9rem;
-    flex-wrap: wrap;
-  }
-
-  .prow h3 {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.3rem;
-    letter-spacing: -0.01em;
-    transition: color 0.2s;
-  }
-
-  .prow.has-accent h3 {
-    color: var(--accent);
-  }
-
-  .prow a:hover h3,
-  .prow a:focus-visible h3 {
-    color: var(--accent);
-  }
-
-  .prow a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-    border-radius: 1px;
-  }
-
-  .status {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.22rem 0.5rem;
-    border-radius: 2px;
-    border: 1px solid var(--line);
-    color: var(--ink-faint);
-    white-space: nowrap;
-  }
-
-  .status.building {
-    color: var(--accent);
-    border-color: var(--accent-dim);
-  }
-
-  .status.ongoing {
-    color: var(--status-sage);
-    border-color: rgba(143, 169, 140, 0.35);
-  }
-
-  .stack {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--ink-faint);
-    letter-spacing: 0.02em;
-  }
-
-  .prow p {
-    font-size: 1rem;
-    color: var(--ink-dim);
-    line-height: 1.5;
-    max-width: 34rem;
-  }
-
   /* mobile */
   @media (max-width: 560px) {
     .hero {
       padding: 3.5rem 0 3rem;
-    }
-
-    .entry {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-    }
-
-    .side {
-      padding-top: 0;
-      display: flex;
-      gap: 0.8rem;
-      align-items: baseline;
-    }
-
-    .side .date {
-      display: inline;
-    }
-
-    .side .topic {
-      display: inline;
-      margin-top: 0;
-    }
-
-    .side .topic::before {
-      content: "· ";
     }
   }
 </style>

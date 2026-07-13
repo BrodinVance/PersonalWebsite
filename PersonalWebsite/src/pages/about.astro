@@ -8,24 +8,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 >
   <div class="wrap">
     <section class="about">
-      <div class="head">
+      <header class="head fx d1">
         <h1>About</h1>
-      </div>
+      </header>
 
-      <p>
+      <p class="lead fx d2">
         About me goes here
       </p>
 
-      <p class="muted">
+      <p class="muted fx d2">
         Right now that means a math degree at Waterloo, a quantum-mechanics self-study track,
         and a steady stream of side projects across software, games, and the occasional kitchen
         experiment. This site is the logbook.
       </p>
 
-      <div class="links">
-        <a href="https://github.com/BrodinVance">GitHub</a>
-        <a href="mailto:brodin.c.vance@gmail.com">Email</a>
-        <a href="/writing">Read the latest &rarr;</a>
+      <div class="elsewhere fx d3">
+        <span class="label">Elsewhere</span>
+        <div class="links">
+          <a href="https://github.com/BrodinVance">GitHub</a>
+          <a href="mailto:brodin.c.vance@gmail.com">Email</a>
+          <a href="/writing">Read the latest &rarr;</a>
+        </div>
       </div>
     </section>
   </div>
@@ -33,59 +36,100 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <style>
   .about {
-    padding: 3.4rem 0 5rem;
+    padding: 4rem 0 6rem;
     max-width: var(--measure);
   }
 
   .head {
-    margin-bottom: 1.75rem;
+    margin-bottom: 2rem;
   }
 
   h1 {
     font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.5rem;
-    letter-spacing: -0.01em;
+    font-weight: 400;
+    font-size: clamp(2rem, 6vw, 2.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
 
-  p {
-    font-size: 1.1rem;
-    line-height: 1.65;
+  /* Opening statement — larger, set in the body serif. */
+  .lead {
+    font-size: 1.32rem;
+    line-height: 1.55;
     color: var(--ink);
+    margin-bottom: 1.4rem;
+  }
+
+  .muted {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--ink-dim);
+  }
+
+  .elsewhere {
+    margin-top: 3rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
     margin-bottom: 1.1rem;
   }
 
-  p.muted {
-    color: var(--ink-dim);
-    font-size: 1rem;
-  }
-
   .links {
-    margin-top: 2rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 1.4rem;
+    gap: 1.6rem;
   }
 
   .links a {
+    position: relative;
     font-family: var(--mono);
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     letter-spacing: 0.03em;
     color: var(--ink-dim);
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 0.15rem;
-    transition: all 0.2s ease;
+    padding-bottom: 3px;
+    transition: color var(--dur) ease;
+  }
+
+  .links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--dur) var(--ease-out-quint);
   }
 
   .links a:hover,
   .links a:focus-visible {
     color: var(--accent);
-    border-color: var(--accent-dim);
+  }
+
+  .links a:hover::after,
+  .links a:focus-visible::after {
+    transform: scaleX(1);
   }
 
   .links a:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
     border-radius: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .links a::after {
+      transition: none;
+    }
   }
 </style>

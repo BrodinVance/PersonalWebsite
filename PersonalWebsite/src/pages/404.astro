@@ -5,24 +5,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="Not Found" description="Page not found.">
   <div class="wrap">
     <section class="not-found">
-      <p class="code">404</p>
-      <p class="msg">Nothing here. <a href="/">Go home &rarr;</a></p>
+      <p class="code fx d1">Error · 404</p>
+      <p class="big fx d2">Off the page.</p>
+      <p class="msg fx d3">
+        There&rsquo;s nothing at this address. <a href="/">Back to the logbook &rarr;</a>
+      </p>
     </section>
   </div>
 </BaseLayout>
 
 <style>
   .not-found {
-    padding: 8rem 0;
+    padding: 7rem 0 9rem;
+    max-width: var(--measure);
   }
 
   .code {
     font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    color: var(--ink-faint);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--accent);
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .big {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 8vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
   }
 
   .msg {

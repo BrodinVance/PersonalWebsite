@@ -31,6 +31,31 @@ const { title, description, image, article, wide = false } = Astro.props;
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // Reveal-on-scroll. Content ships visible; we only arm (hide-then-reveal)
+      // when JS runs AND motion is allowed, so prerender/no-JS/reduced-motion
+      // never gate content behind a transition that might not fire.
+      (function () {
+        const els = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+        if (!els.length || !('IntersectionObserver' in window)) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        els.forEach((el) => el.classList.add('reveal-armed'));
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('reveal-in');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+        );
+        els.forEach((el) => io.observe(el));
+      })();
+    </script>
   </body>
 </html>
 
@@ -46,7 +71,7 @@ const { title, description, image, article, wide = false } = Astro.props;
     font-size: 0.75rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    z-index: 10000;
+    z-index: var(--z-skip);
     border-radius: 2px;
     transition: top 0.2s;
   }
