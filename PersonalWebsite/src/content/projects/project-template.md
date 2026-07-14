@@ -1,14 +1,17 @@
 ---
-title: "Anatomy of a Project"
-description: "A reference entry showing every field a project supports and how each one renders. Copy it, replace it, ship it."
-status: "building"
-stack: ["Astro", "TypeScript", "CSS"]
+title: Anatomy of a Project
+description: A reference entry showing every field a project supports and how each one renders. Copy it, replace it, ship it.
+status: building
+stack:
+  - Astro
+  - TypeScript
+  - CSS
 year: 2026
 featured: true
 order: 100
 links:
-  github: "https://github.com/BrodinVance"
-  # demo: "https://example.com"   # optional — omit the line entirely if there's no demo
+  github: https://github.com/BrodinVance
+draft: true
 ---
 
 This entry is a template. It documents every project field and shows how each renders, so the next project is just a matter of swapping the contents.
