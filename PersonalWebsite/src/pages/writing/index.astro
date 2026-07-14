@@ -18,6 +18,9 @@ function formatDate(date: Date) {
 <BaseLayout title="Writing" description="Notes and essays on quantum mechanics, math, game development, and cooking.">
   <div class="wrap">
     <section class="writing-section">
+      {posts[0] && (
+        <span class="ghost-year" aria-hidden="true">&rsquo;{String(posts[0].data.date.getFullYear()).slice(-2)}</span>
+      )}
       <div class="head">
         <h1>Writing</h1>
         <span class="meta">Weekly · notes &amp; essays</span>
@@ -109,6 +112,7 @@ function formatDate(date: Date) {
 
 <style>
   .writing-section {
+    position: relative; /* anchors the ghost year numeral */
     padding: 3.4rem 0;
   }
 
@@ -122,9 +126,19 @@ function formatDate(date: Date) {
 
   h1 {
     font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.5rem;
-    letter-spacing: -0.01em;
+    font-weight: 400;
+    font-size: clamp(2rem, 6vw, 2.6rem);
+    letter-spacing: 0.01em;
+  }
+
+  h1::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 0.55rem;
+    background: var(--accent);
+    border-radius: 1px;
   }
 
   .meta {
@@ -172,7 +186,7 @@ function formatDate(date: Date) {
   .chip.on {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(203, 142, 66, 0.06);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
   }
 
   /* Filter transitions layer onto the shared .entry system in global.css. */

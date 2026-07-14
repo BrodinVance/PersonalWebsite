@@ -3,15 +3,53 @@ const year = new Date().getFullYear();
 ---
 
 <footer>
-  <div class="wrap footer-inner">
-    <span>Brodin Vance &mdash; Waterloo, ON</span>
-    <span>Built with Astro · {year}</span>
+  <!-- the valley floor: a treeline closes the page, two cabins still lit -->
+  <svg
+    class="valley"
+    viewBox="0 0 1440 72"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M0 72 L0 54 L14 30 L28 54 L38 40 L52 54 L70 22 L88 54 L102 44 L118 54 L134 34 L152 54 L170 46 L184 54 L204 26 L224 54 L238 42 L254 54 L272 32 L290 54 L306 46 L320 54 L338 24 L356 54 L372 44 L386 54 L404 36 L422 54 L440 48 L452 54 L470 28 L490 54 L506 42 L520 54 L540 32 L558 54 L574 46 L588 54 L608 22 L628 54 L644 44 L658 54 L676 34 L694 54 L710 46 L724 54 L744 26 L764 54 L780 42 L794 54 L812 30 L830 54 L846 46 L860 54 L880 24 L900 54 L916 44 L930 54 L948 36 L966 54 L984 48 L996 54 L1014 28 L1034 54 L1050 42 L1064 54 L1084 32 L1102 54 L1118 46 L1132 54 L1152 22 L1172 54 L1188 44 L1202 54 L1220 34 L1238 54 L1254 46 L1268 54 L1288 26 L1308 54 L1324 42 L1338 54 L1356 30 L1374 54 L1390 46 L1404 54 L1422 38 L1440 54 L1440 72 Z"
+    />
+    <!-- cabins among the trees -->
+    <rect class="lamp" x="415" y="58" width="4" height="5" />
+    <rect class="lamp l2" x="1027" y="57" width="4" height="5" />
+  </svg>
+
+  <div class="valley-floor">
+    <div class="wrap footer-inner">
+      <span>Brodin Vance &mdash; Waterloo, ON</span>
+      <span>Built with Astro · {year}</span>
+    </div>
   </div>
 </footer>
 
 <style>
   footer {
-    border-top: 1px solid var(--line-soft);
+    margin-top: 4rem;
+  }
+
+  .valley {
+    display: block;
+    width: 100%;
+    height: 72px;
+  }
+
+  .valley path {
+    fill: var(--bg-zenith);
+  }
+
+  .lamp {
+    fill: var(--accent);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 4px color-mix(in oklab, var(--accent) 70%, transparent));
+  }
+
+  .valley-floor {
+    background: var(--bg-zenith);
   }
 
   .footer-inner {
@@ -19,7 +57,7 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.6rem;
-    padding: 2.5rem 0 3.5rem;
+    padding: 2.25rem 0 3.5rem;
     font-family: var(--mono);
     font-size: 0.66rem;
     letter-spacing: 0.04em;

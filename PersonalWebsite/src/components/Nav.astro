@@ -1,8 +1,14 @@
 ---
+interface Props {
+  /** Float transparently over a full-bleed hero instead of owning a bar. */
+  bleed?: boolean;
+}
+
+const { bleed = false } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
-<nav class="fx" aria-label="Site navigation">
+<nav class:list={['fx', { bleed }]} aria-label="Site navigation">
   <div class="wrap nav-inner">
     <a href="/" class="mark" aria-current={pathname === '/' ? 'page' : undefined}>Brodin Vance<span class="dot">.</span></a>
     <div class="navlinks">
@@ -18,6 +24,17 @@ const pathname = Astro.url.pathname;
     border-bottom: 1px solid var(--line-soft);
   }
 
+  /* Over the hero scene: no bar, just type on sky. */
+  nav.bleed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    border-bottom: none;
+    background: transparent;
+  }
+
   .nav-inner {
     display: flex;
     align-items: baseline;
@@ -27,7 +44,7 @@ const pathname = Astro.url.pathname;
 
   .mark {
     font-family: var(--serif);
-    font-weight: 500;
+    font-weight: 400;
     font-size: 1.05rem;
     letter-spacing: -0.01em;
   }

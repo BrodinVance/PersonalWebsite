@@ -42,7 +42,7 @@ const linkEntries = Object.entries(links).filter(([, url]) => url);
       class:list={['project', { 'has-accent': accent }]}
       style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
     >
-      <header class="project-header fx">
+      <header class="project-header halo fx">
         <a class="back" href="/projects">← Projects</a>
         <div class="ptop">
           <h1>{title}</h1>
@@ -141,7 +141,7 @@ const linkEntries = Object.entries(links).filter(([, url]) => url);
 
   .status.ongoing {
     color: var(--status-sage);
-    border-color: rgba(143, 169, 140, 0.35);
+    border-color: color-mix(in oklab, var(--status-sage) 40%, transparent);
   }
 
   .stack {

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroScene from '../components/HeroScene.astro';
 import { TOPIC_LABELS } from '../lib/topics';
 
 const allPosts = (
@@ -35,27 +36,32 @@ const STATUS_LABELS: Record<string, string> = {
 <BaseLayout
   title="Brodin Vance"
   description="Honours Math student at the University of Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning."
+  bleed
 >
+  <HeroScene>
+    <h1 class="fx d1">Brodin Vance</h1>
+    <p class="lede fx d2">
+      Honours Mathematics Student at University of Waterloo. I build games and software,
+      cook more than is reasonable, and write here about whatever I&rsquo;m learning
+      &mdash; lately, mostly <em>quantum mechanics</em>.
+    </p>
+    <a class="cue fx d4" href="#currently">The log &darr;</a>
+  </HeroScene>
+
   <div class="wrap">
 
-    <header class="hero">
-      <h1 class="fx d1">Brodin Vance</h1>
-      <p class="lede fx d2">
-        Honours Mathematics Student at University of Waterloo. I build games and software,
-        cook more than is reasonable, and write here about whatever I&rsquo;m learning
-        &mdash; lately, mostly <em>quantum mechanics</em>.
-      </p>
-
-      <div class="currently fx d3">
-        <span class="label">Currently</span>
-        <ul>
-          <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
-        </ul>
-      </div>
-    </header>
+    <section class="currently fx d3" id="currently">
+      <span class="label">Currently</span>
+      <ul>
+        <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
+      </ul>
+    </section>
 
     {latestPosts.length > 0 && (
-      <section class="block" id="writing" data-reveal>
+      <section class="block rule-aurora" id="writing" data-reveal>
+        {newestPost && (
+          <span class="ghost-year" aria-hidden="true">&rsquo;{String(newestPost.data.date.getFullYear()).slice(-2)}</span>
+        )}
         <div class="head">
           <h2>Writing</h2>
           {newestPost && (
@@ -93,7 +99,7 @@ const STATUS_LABELS: Record<string, string> = {
     )}
 
     {featuredProjects.length > 0 && (
-      <section class="block" id="projects" data-reveal>
+      <section class="block rule-aurora" id="projects" data-reveal>
         <div class="head">
           <h2>Projects</h2>
           <a class="meta-link" href="/projects">All projects &rarr;</a>
@@ -127,23 +133,31 @@ const STATUS_LABELS: Record<string, string> = {
 </BaseLayout>
 
 <style>
-  /* hero */
-  .hero {
-    padding: 5.5rem 0 4rem;
-  }
-
+  /* hero type on the sky — inscriptional caps, like the plaque at the lodge */
   h1 {
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(2.7rem, 11vw, 4.4rem);
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.6rem;
+    font-size: clamp(2.5rem, 8.5vw, 5.4rem);
+    line-height: 1.06;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.8rem;
+  }
+
+  /* a short engraved rule under the name */
+  h1::after {
+    content: '';
+    display: block;
+    width: 3.5rem;
+    height: 2px;
+    margin-top: 1.4rem;
+    background: var(--accent);
+    border-radius: 1px;
   }
 
   .lede {
-    font-size: 1.22rem;
-    line-height: 1.55;
+    font-size: clamp(1.1rem, 2.4vw, 1.25rem);
+    line-height: 1.6;
     color: var(--ink);
     max-width: var(--measure);
   }
@@ -153,11 +167,36 @@ const STATUS_LABELS: Record<string, string> = {
     color: var(--accent);
   }
 
+  .cue {
+    display: inline-block;
+    margin-top: 3rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    transition: color var(--dur-fast);
+  }
+
+  .cue:hover,
+  .cue:focus-visible {
+    color: var(--accent);
+  }
+
+  .cue:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* the field note below the scene — a raised frost panel, lit from within */
   .currently {
-    margin-top: 2.6rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line);
+    margin-top: 2.75rem;
+    padding: 1.5rem 1.75rem 1.6rem;
     max-width: var(--measure);
+    background: var(--bg-raise);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
   }
 
   .currently .label {
@@ -166,6 +205,7 @@ const STATUS_LABELS: Record<string, string> = {
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent);
+    text-shadow: 0 0 14px color-mix(in oklab, var(--accent) 45%, transparent);
     display: block;
     margin-bottom: 1rem;
   }
@@ -200,25 +240,35 @@ const STATUS_LABELS: Record<string, string> = {
     color: var(--brine);
   }
 
-  /* section frame */
+  /* section frame — the top rule is the global aurora hairline (.rule-aurora) */
   .block {
-    padding: 3.4rem 0;
-    border-top: 1px solid var(--line-soft);
+    padding: 4.25rem 0;
   }
 
   .head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 2.25rem;
     gap: 1rem;
   }
 
+  /* display-scale section titles with the engraved amber tick */
   h2 {
     font-family: var(--serif);
-    font-weight: 500;
-    font-size: 1.5rem;
-    letter-spacing: -0.01em;
+    font-weight: 400;
+    font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+    letter-spacing: 0.01em;
+  }
+
+  h2::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 0.55rem;
+    background: var(--accent);
+    border-radius: 1px;
   }
 
   .meta-link {
@@ -267,10 +317,4 @@ const STATUS_LABELS: Record<string, string> = {
     border-radius: 1px;
   }
 
-  /* mobile */
-  @media (max-width: 560px) {
-    .hero {
-      padding: 3.5rem 0 3rem;
-    }
-  }
 </style>

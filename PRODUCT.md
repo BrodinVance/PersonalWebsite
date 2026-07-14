@@ -22,7 +22,7 @@ An honest, ongoing logbook of a curious mind at work — real projects and real 
 
 ## Brand Personality
 
-Quiet craft and depth. The site should read as the work of someone who takes care — unhurried, considered, substantial. The voice is plain and a little dry (the about page's "the occasional kitchen experiment… this site is the logbook"), confident without performing confidence. Warmth comes through restraint, not decoration: the matte warm-dark palette, editorial serifs, and film grain already carry the tone. Nothing should shout.
+Quiet craft and depth, set at blue hour. The identity is a scene: outside a grand mountain lodge (Banff Springs) on a snowy winter night at blue hour — deep twilight-indigo sky, snow-white ink, and lamplight amber glowing in the windows. The voice is plain and a little dry (the about page's "the occasional kitchen experiment… this site is the logbook"), confident without performing confidence. The home hero renders the scene literally (ridgelines, lodge, snowfall); every other surface carries it through palette and type alone. Type is inscriptional Marcellus for display (the engraved plaque), Literata for long-form body, Spline Sans Mono for logbook metadata. The scene may be vivid; the reading surfaces stay hushed.
 
 ## Anti-references
 
@@ -32,7 +32,7 @@ Not the generic developer-portfolio template — no hero-with-skill-bars, projec
 
 The site is the logbook. Every design decision serves the accumulation and reading of the work, not the promotion of its author. When in doubt, favor the record over the pitch.
 
-Quiet over loud. Restraint is the aesthetic. Reach for typography, spacing, and material (the matte grain, the warm dark) before color, motion, or effect. If an element draws attention to itself rather than to the writing, cut it.
+One bold scene, then hush. The blue-hour world is allowed one theatrical surface — the home hero. Past it, reach for typography, spacing, and material (the grain, the twilight indigo, the frost lines) before color, motion, or effect. If an element draws attention to itself rather than to the writing, cut it.
 
 Reading is the primary act. Long-form text is the main surface; protect the reading experience — measure, rhythm, contrast, and hierarchy — above all else.
 

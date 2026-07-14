@@ -40,7 +40,7 @@ function formatDate(d: Date) {
       class:list={['post', { 'has-accent': accent }]}
       style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
     >
-      <header class="post-header fx">
+      <header class="post-header halo fx">
         <div class="post-meta">
           <time datetime={date.toISOString()}>
             {formatDate(date)}
@@ -175,7 +175,7 @@ function formatDate(d: Date) {
 
   .tag {
     color: var(--accent-dim);
-    background: rgba(203, 142, 66, 0.09);
+    background: color-mix(in oklab, var(--accent) 11%, transparent);
     padding: 0.15em 0.45em;
     border-radius: 2px;
     transition: color 0.2s, background 0.2s;
@@ -184,7 +184,7 @@ function formatDate(d: Date) {
   .tag:hover,
   .tag:focus-visible {
     color: var(--accent);
-    background: rgba(203, 142, 66, 0.15);
+    background: color-mix(in oklab, var(--accent) 17%, transparent);
   }
 
   .tag:focus-visible {

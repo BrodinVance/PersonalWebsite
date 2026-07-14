@@ -23,7 +23,8 @@ export default defineConfig({
       rehypePlugins: [rehypeKatex],
     }),
     shikiConfig: {
-      theme: 'vesper',
+      // Blue-native dark theme to match the blue-hour palette.
+      theme: 'night-owl',
     },
   },
   // All marked optional so the build (which loads middleware during prerender)

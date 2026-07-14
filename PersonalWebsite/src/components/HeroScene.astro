@@ -1,0 +1,518 @@
+---
+/**
+ * Blue hour over the valley — the home hero.
+ *
+ * Layers, back to front: gradient sky (CSS), moon + stars (SVG), two mountain
+ * ridgelines, a snowfield, the lodge with lamplit windows, and a pine treeline
+ * whose fill is exactly var(--bg) so the scene melts into the page.
+ * Snowfall is a small canvas, gated behind prefers-reduced-motion, paused when
+ * the tab is hidden or the hero is scrolled away. Slot content sits on the sky.
+ *
+ * The scene is composed so x≈500–940 (viewBox units) survives mobile cropping:
+ * the moon, the tallest peaks, and the lodge all live in that safe band.
+ */
+
+// Deterministic PRNG so the starfield is identical on every build.
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const rand = mulberry32(19271101); // Banff Springs opening era, why not
+
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  o: number;
+  twinkle: boolean;
+  delay: number;
+}
+
+const stars: Star[] = [];
+for (let i = 0; i < 54; i++) {
+  const x = Math.round(rand() * 1440);
+  const y = Math.round(rand() * 250 + 8);
+  // keep a clearing around the moon
+  if (Math.hypot(x - 866, y - 72) < 80) continue;
+  stars.push({
+    x,
+    y,
+    r: +(0.5 + rand() * 0.9).toFixed(2),
+    o: +(0.25 + rand() * 0.5).toFixed(2),
+    twinkle: i % 6 === 0,
+    delay: +(rand() * 4).toFixed(2),
+  });
+}
+
+// Pine treeline — jagged teeth across the full width, foreground fill = --bg.
+const base = 566;
+let treeline = `M0 640 L0 ${base}`;
+let tx = 0;
+while (tx < 1440) {
+  const w = 18 + Math.round(rand() * 16);
+  const h = 20 + Math.round(rand() * 34);
+  treeline += ` L${tx + w / 2} ${base - h} L${tx + w} ${base}`;
+  tx += w;
+}
+treeline += ' L1440 640 Z';
+
+// Lodge windows: [x, y] in scene units; lit in a shuffled order after load.
+const windows: [number, number][] = [
+  [812, 456], [826, 456],
+  [812, 472], [826, 472],
+  [812, 488], [826, 488],
+  [766, 478], [779, 478], [792, 478],
+  [856, 474], [871, 474], [886, 474],
+  [856, 490], [871, 490], [886, 490],
+];
+const order = windows.map((_, i) => i).sort(() => rand() - 0.5);
+---
+
+<section class="hero-scene">
+  <div class="scene" aria-hidden="true">
+    <svg
+      viewBox="0 0 1440 640"
+      preserveAspectRatio="xMidYMax slice"
+      role="img"
+      aria-label=""
+      focusable="false"
+    >
+      <defs>
+        <linearGradient id="aurora-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" style="stop-color: oklch(0.72 0.12 185)" stop-opacity="0" />
+          <stop offset="0.32" style="stop-color: oklch(0.75 0.14 165)" stop-opacity="0.55" />
+          <stop offset="0.68" style="stop-color: oklch(0.66 0.1 315)" stop-opacity="0.4" />
+          <stop offset="1" style="stop-color: oklch(0.66 0.1 315)" stop-opacity="0" />
+        </linearGradient>
+        <filter id="aurora-blur" x="-20%" y="-80%" width="140%" height="260%">
+          <feGaussianBlur stdDeviation="14" />
+        </filter>
+      </defs>
+
+      <g data-plx="0.10">
+        <!-- aurora — two blurred ribbons drifting over the zenith -->
+        <g class="aurora" filter="url(#aurora-blur)">
+          <path
+            class="a1"
+            fill="url(#aurora-grad)"
+            d="M60 150 C 300 60, 560 130, 820 84 C 1020 50, 1240 110, 1400 70 L1400 98 C 1230 142, 1030 86, 830 118 C 590 156, 320 98, 80 180 Z"
+          />
+          <path
+            class="a2"
+            fill="url(#aurora-grad)"
+            opacity="0.55"
+            d="M180 212 C 420 142, 700 192, 940 152 C 1120 124, 1300 162, 1420 138 L1420 156 C 1290 186, 1120 152, 950 180 C 710 220, 430 172, 200 236 Z"
+          />
+        </g>
+
+        <!-- moon with halo — high and right, clear of the title block -->
+        <circle cx="866" cy="72" r="48" class="moon-halo" />
+        <circle cx="866" cy="72" r="19" class="moon" />
+
+        <!-- stars -->
+        <g class="stars">
+          {stars.map((s) => (
+            <circle
+              cx={s.x}
+              cy={s.y}
+              r={s.r}
+              opacity={s.o}
+              class:list={[{ twinkle: s.twinkle }]}
+              style={s.twinkle ? `--td: ${s.delay}s` : undefined}
+            />
+          ))}
+        </g>
+      </g>
+
+      <!-- far ridge, lit faintly by the horizon -->
+      <path
+        data-plx="0.06"
+        class="ridge-far"
+        d="M0 320 L110 262 L220 300 L330 236 L440 296 L520 240 L590 176 L664 258 L742 220 L818 282 L880 196 L958 272 L1040 238 L1120 300 L1210 258 L1300 320 L1372 288 L1440 330 L1440 640 L0 640 Z"
+      />
+
+      <g data-plx="0.035">
+        <!-- mid ridge -->
+        <path
+          class="ridge-mid"
+          d="M0 408 L96 366 L200 418 L308 358 L420 428 L536 380 L648 440 L742 396 L852 452 L964 402 L1076 458 L1180 416 L1290 468 L1376 436 L1440 478 L1440 640 L0 640 Z"
+        />
+
+        <!-- valley snowfield, holding the last light -->
+        <path
+          class="snowfield"
+          d="M0 492 C 320 470, 760 516, 1080 488 C 1240 476, 1360 492, 1440 484 L1440 640 L0 640 Z"
+        />
+
+        <!-- the valley road, and someone coming home -->
+        <path
+          class="road"
+          d="M-20 524 C 240 514, 470 530, 700 516 C 748 512, 780 509, 800 507"
+        />
+        <circle class="car" r="2.6" />
+
+        <!-- the lodge -->
+        <g class="lodge">
+          <!-- left wing -->
+          <polygon points="760,468 780,452 800,468" />
+          <rect x="760" y="468" width="40" height="44" />
+          <!-- main tower -->
+          <polygon points="806,446 824,412 842,446" />
+          <rect x="806" y="446" width="36" height="66" />
+          <line x1="824" y1="412" x2="824" y2="400" />
+          <!-- right wing -->
+          <polygon points="848,462 874,444 900,462" />
+          <rect x="848" y="462" width="52" height="50" />
+        </g>
+
+        <!-- lamplight -->
+        <g class="wins">
+          {windows.map(([x, y], i) => (
+            <rect
+              class="win"
+              x={x}
+              y={y}
+              width="5"
+              height="7"
+              style={`--d: ${(1.1 + order[i] * 0.13).toFixed(2)}s; --win-o: ${(0.72 + rand() * 0.28).toFixed(2)}`}
+            />
+          ))}
+        </g>
+      </g>
+
+      <!-- pine treeline, fill = page bg so the scene melts into the content -->
+      <path data-plx="0.012" class="treeline" d={treeline} />
+    </svg>
+
+    <canvas id="snow-canvas"></canvas>
+  </div>
+
+  <div class="wrap hero-content">
+    <slot />
+  </div>
+</section>
+
+<script>
+  // Snowfall — skipped entirely under reduced motion; paused when the tab is
+  // hidden or the hero has been scrolled out of view.
+  (function () {
+    const canvas = document.getElementById('snow-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const hero = canvas.closest('.hero-scene') as HTMLElement;
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+
+    interface Flake {
+      x: number;
+      y: number;
+      r: number;
+      vy: number;
+      amp: number;
+      phase: number;
+    }
+    let flakes: Flake[] = [];
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = hero.clientWidth;
+      h = hero.clientHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      const count = Math.round(Math.min(Math.max(w / 22, 40), 80));
+      flakes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.7 + Math.random() * 1.6,
+        vy: 0,
+        amp: 8 + Math.random() * 18,
+        phase: Math.random() * Math.PI * 2,
+      }));
+      flakes.forEach((f) => (f.vy = 13 + f.r * 8));
+    }
+
+    let running = false;
+    let inView = true;
+    let raf = 0;
+    let last = 0;
+
+    function frame(t: number) {
+      if (!running) return;
+      const dt = last ? Math.min((t - last) / 1000, 0.05) : 0.016;
+      last = t;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const time = t / 1000;
+      for (const f of flakes) {
+        f.y += f.vy * dt;
+        if (f.y > h + 4) {
+          f.y = -4;
+          f.x = Math.random() * w;
+        }
+        const x = f.x + Math.sin(time * 0.45 + f.phase) * f.amp;
+        ctx.globalAlpha = 0.28 + f.r * 0.22;
+        ctx.beginPath();
+        ctx.arc(x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#e9edf6';
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    function setRunning(next: boolean) {
+      if (next === running) return;
+      running = next;
+      if (running) {
+        last = 0;
+        raf = requestAnimationFrame(frame);
+      } else {
+        cancelAnimationFrame(raf);
+      }
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    document.addEventListener('visibilitychange', () =>
+      setRunning(!document.hidden && inView)
+    );
+    new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        setRunning(!document.hidden && inView);
+      },
+      { threshold: 0 }
+    ).observe(hero);
+    setRunning(true);
+  })();
+
+  // Parallax depth — distant layers linger as you scroll past the scene.
+  // Farther layers carry larger factors, so they scroll away more slowly.
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const hero = document.querySelector('.hero-scene');
+    if (!hero) return;
+    const layers = Array.from(
+      hero.querySelectorAll<SVGElement>('[data-plx]')
+    ).map((el) => ({ el, f: parseFloat(el.dataset.plx || '0') }));
+    if (!layers.length) return;
+
+    let ticking = false;
+    let active = true;
+
+    function apply() {
+      ticking = false;
+      const y = Math.max(0, Math.min(window.scrollY, hero.clientHeight));
+      for (const { el, f } of layers) {
+        el.style.transform = `translateY(${(y * f).toFixed(1)}px)`;
+      }
+    }
+
+    function onScroll() {
+      if (!active || ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+
+    new IntersectionObserver(
+      (entries) => {
+        active = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0 }
+    ).observe(hero);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    apply();
+  })();
+</script>
+
+<style>
+  .hero-scene {
+    position: relative;
+    min-height: clamp(560px, 92vh, 920px);
+    display: flex;
+    align-items: flex-start;
+    overflow: hidden;
+    /* the blue-hour sky: deep zenith to luminous horizon */
+    background: linear-gradient(
+      to bottom,
+      var(--bg-zenith) 0%,
+      var(--bg) 42%,
+      var(--bg-horizon) 78%,
+      var(--bg) 100%
+    );
+  }
+
+  .scene,
+  .scene svg,
+  .scene canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scene {
+    pointer-events: none;
+  }
+
+  /* aurora — present even when still; motion only adds the drift */
+  .aurora {
+    opacity: 0.34;
+  }
+
+  .aurora .a1 {
+    animation: aurora-drift 36s ease-in-out infinite alternate;
+  }
+
+  .aurora .a2 {
+    animation: aurora-drift 48s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes aurora-drift {
+    from { transform: translateX(-26px) skewX(-1.5deg); }
+    to { transform: translateX(28px) skewX(1.5deg); }
+  }
+
+  .moon {
+    fill: oklch(0.93 0.015 250);
+    opacity: 0.9;
+  }
+
+  .moon-halo {
+    fill: oklch(0.93 0.015 250);
+    opacity: 0.07;
+  }
+
+  .stars circle {
+    fill: oklch(0.95 0.01 250);
+  }
+
+  .stars .twinkle {
+    animation: twinkle 5s ease-in-out infinite;
+    animation-delay: var(--td, 0s);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.15; }
+  }
+
+  .ridge-far {
+    fill: color-mix(in oklab, var(--bg-horizon) 52%, var(--bg));
+  }
+
+  .ridge-mid {
+    fill: color-mix(in oklab, var(--bg) 72%, var(--bg-horizon));
+  }
+
+  .snowfield {
+    fill: color-mix(in oklab, var(--bg) 76%, var(--bg-horizon));
+  }
+
+  /* the valley road — barely there, a seam in the snow */
+  .road {
+    fill: none;
+    stroke: color-mix(in oklab, var(--bg) 55%, var(--bg-horizon));
+    stroke-width: 3;
+    opacity: 0.55;
+  }
+
+  /* headlights coming home along it, every so often */
+  .car {
+    fill: var(--accent);
+    filter: drop-shadow(0 0 4px color-mix(in oklab, var(--accent) 80%, transparent));
+    opacity: 0;
+    offset-path: path('M-20 524 C 240 514, 470 530, 700 516 C 748 512, 780 509, 800 507');
+    offset-rotate: 0deg;
+    animation: drive 26s linear infinite;
+    animation-delay: 4s;
+  }
+
+  @keyframes drive {
+    0% { offset-distance: 0%; opacity: 0; }
+    3% { opacity: 0.9; }
+    42% { opacity: 0.9; }
+    46% { offset-distance: 100%; opacity: 0; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  .lodge rect,
+  .lodge polygon {
+    /* darker than every ridge so the silhouette reads at a glance */
+    fill: oklch(0.13 0.038 268);
+  }
+
+  .lodge line {
+    stroke: oklch(0.13 0.038 268);
+    stroke-width: 2;
+  }
+
+  .wins {
+    filter: drop-shadow(0 0 5px color-mix(in oklab, var(--accent) 70%, transparent));
+  }
+
+  .win {
+    fill: var(--accent);
+    opacity: 0;
+    animation: light-on 0.55s var(--ease-out) forwards;
+    animation-delay: var(--d, 1s);
+  }
+
+  @keyframes light-on {
+    to { opacity: var(--win-o, 0.9); }
+  }
+
+  .treeline {
+    fill: var(--bg);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-top: clamp(7.5rem, 20vh, 12rem);
+    padding-bottom: 10rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stars .twinkle {
+      animation: none;
+    }
+
+    /* the windows are simply lit — the scene ships complete */
+    .win {
+      animation: none;
+      opacity: var(--win-o, 0.9);
+    }
+
+    /* the aurora holds still; the road sits empty */
+    .aurora .a1,
+    .aurora .a2 {
+      animation: none;
+    }
+
+    .car {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hero-scene {
+      min-height: clamp(520px, 86vh, 760px);
+    }
+
+    .hero-content {
+      padding-top: clamp(6rem, 16vh, 9rem);
+      padding-bottom: 7rem;
+    }
+  }
+</style>
