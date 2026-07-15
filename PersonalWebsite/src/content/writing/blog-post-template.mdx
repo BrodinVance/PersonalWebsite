@@ -3,8 +3,8 @@ title: Anatomy of a Post
 description: A living reference for every feature a writing entry supports — frontmatter, headings, math, code, footnotes, and more. Copy it, gut it, write.
 date: '2026-06-21'
 topics:
-  - math
-  - gamedev
+  - math-physics
+  - games
 draft: true
 ---
 
@@ -17,7 +17,7 @@ Every post starts with a frontmatter block fenced by `---`. The fields are typed
 - **`title`** — shown in the log, the page heading, and the browser tab.
 - **`description`** — one sentence. It's the dek under the title and the meta description for search and social cards.
 - **`date`** — `YYYY-MM-DD`. Drives sort order (newest first) and the timestamp rail.
-- **`topics`** — any of `quantum`, `math`, `gamedev`, `cooking`. Powers the filter chips and the topic archive pages. Leave it `[]` for none.
+- **`topics`** — any of `math-physics`, `games`, `food`. Powers the filter chips and the topic archive pages. Leave it `[]` for none.
 - **`draft`** — `true` hides the post in production but keeps it visible in `npm run dev`. Use it for work in progress.
 - **`cover`** — optional image, rendered at the top of the post. Drop a file beside this `.mdx` and point to it with `./name.png`.
 

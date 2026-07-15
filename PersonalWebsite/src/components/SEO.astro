@@ -17,6 +17,9 @@ const ogImage = image ? new URL(image, siteUrl).toString() : `${siteUrl}/og-defa
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL} />
+<!-- --bg-zenith: mobile browser chrome melts into the night like the footer does -->
+<meta name="theme-color" content="#060c24" />
+<link rel="alternate" type="application/rss+xml" title="Brodin Vance — Writing" href="/rss.xml" />
 
 <!-- Open Graph -->
 <meta property="og:title" content={pageTitle} />

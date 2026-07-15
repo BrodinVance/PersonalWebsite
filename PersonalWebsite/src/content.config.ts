@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-export const TOPICS = ['quantum', 'math', 'gamedev', 'cooking'] as const;
+export const TOPICS = ['math-physics', 'games', 'food'] as const;
 export type Topic = (typeof TOPICS)[number];
 
 const writing = defineCollection({

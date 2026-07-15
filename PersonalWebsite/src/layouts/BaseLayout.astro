@@ -4,6 +4,13 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 
+// Preload the three above-the-fold faces (latin subsets) so the browser
+// fetches them alongside the CSS instead of after parsing it. The ?url
+// imports resolve to the same hashed assets the Fontsource CSS references.
+import marcellusUrl from '@fontsource/marcellus/files/marcellus-latin-400-normal.woff2?url';
+import literataUrl from '@fontsource-variable/literata/files/literata-latin-wght-normal.woff2?url';
+import splineMonoUrl from '@fontsource-variable/spline-sans-mono/files/spline-sans-mono-latin-wght-normal.woff2?url';
+
 interface Props {
   title: string;
   description: string;
@@ -55,6 +62,11 @@ const gutterStars: GutterStar[] = Array.from({ length: 14 }, (_, i) => ({
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="font" type="font/woff2" href={marcellusUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={literataUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={splineMonoUrl} crossorigin />
     <SEO title={title} description={description} image={image} article={article} />
   </head>
   <body>

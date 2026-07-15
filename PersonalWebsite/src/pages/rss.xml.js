@@ -8,7 +8,7 @@ export async function GET(context) {
 
   return rss({
     title: 'Brodin Vance',
-    description: 'Notes and essays on quantum mechanics, math, game development, and cooking.',
+    description: 'Notes and essays on math, physics, games, and food.',
     site: context.site,
     items: posts.map((post) => ({
       title: post.data.title,

@@ -1,7 +1,8 @@
 import { AccentPicker } from './AccentPicker';
 import { LinksField } from './LinksField';
+import { TOPIC_LABELS } from '../../lib/topics';
 
-const TOPICS = ['quantum', 'math', 'gamedev', 'cooking'];
+const TOPICS = Object.keys(TOPIC_LABELS) as Array<keyof typeof TOPIC_LABELS>;
 const STATUSES = ['building', 'planned', 'ongoing', 'shipped'];
 
 export function FrontmatterForm({
@@ -57,7 +58,7 @@ export function FrontmatterForm({
                       set('topics', [...cur]);
                     }}
                   />
-                  {t}
+                  {TOPIC_LABELS[t]}
                 </label>
               ))}
             </div>

@@ -16,7 +16,10 @@ export default defineConfig({
   // Default output is 'static'. Adding an adapter lets individual routes
   // opt into on-demand rendering via `export const prerender = false`.
   // The whole public site stays static; only /admin and /api/* run as functions.
-  adapter: vercel(),
+  adapter: vercel({
+    // Requires Web Analytics to be enabled on the Vercel project dashboard.
+    webAnalytics: { enabled: true },
+  }),
   integrations: [mdx(), react(), sitemap()],
   // Hover-prefetch every internal link so MPA navigation resolves near-instantly.
   prefetch: {

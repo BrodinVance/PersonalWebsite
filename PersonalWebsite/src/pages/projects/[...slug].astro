@@ -37,7 +37,7 @@ function linkLabel(name: string) {
 const linkEntries = Object.entries(links).filter(([, url]) => url);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} image={`/og/projects/${project.id}.png`}>
   <div class="wrap">
     <article
       class:list={['project', { 'has-accent': accent }]}
