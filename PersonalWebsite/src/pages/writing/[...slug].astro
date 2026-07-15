@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import { TOPIC_LABELS } from '../../lib/topics';
+import { vtName } from '../../lib/vt';
 
 export async function getStaticPaths() {
   const posts = await getCollection('writing', ({ data }) =>
@@ -40,8 +41,9 @@ function formatDate(d: Date) {
       class:list={['post', { 'has-accent': accent }]}
       style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
     >
-      <header class="post-header halo fx">
-        <div class="post-meta">
+      <header class="post-header halo">
+        <a class="back fx" href="/writing">&larr; Writing</a>
+        <div class="post-meta fx d1">
           <time datetime={date.toISOString()}>
             {formatDate(date)}
           </time>
@@ -57,8 +59,8 @@ function formatDate(d: Date) {
             </>
           ))}
         </div>
-        <h1>{title}</h1>
-        <p class="dek">{description}</p>
+        <h1 style={`view-transition-name: ${vtName('post', post.id)}`}>{title}</h1>
+        <p class="dek fx d2">{description}</p>
       </header>
 
       {cover && (
@@ -154,6 +156,28 @@ function formatDate(d: Date) {
 
   .post-header {
     margin-bottom: 0;
+  }
+
+  .back {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+  }
+
+  .back:hover,
+  .back:focus-visible {
+    color: var(--accent);
+  }
+
+  .back:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 1px;
   }
 
   .post-meta {

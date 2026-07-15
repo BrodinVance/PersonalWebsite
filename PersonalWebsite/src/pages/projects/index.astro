@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { vtName } from '../../lib/vt';
 
 const projects = (
   await getCollection('projects', ({ data }) =>
@@ -36,7 +37,7 @@ const STATUS_LABELS: Record<string, string> = {
           >
             <div class="ptop">
               <a href={`/projects/${project.id}`}>
-                <h2>{project.data.title}</h2>
+                <h2 style={`view-transition-name: ${vtName('proj', project.id)}`}>{project.data.title}</h2>
               </a>
               <span class:list={['status', project.data.status]}>
                 {STATUS_LABELS[project.data.status]}

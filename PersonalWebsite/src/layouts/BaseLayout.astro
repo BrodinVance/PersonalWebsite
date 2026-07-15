@@ -80,6 +80,45 @@ const gutterStars: GutterStar[] = Array.from({ length: 14 }, (_, i) => ({
     <Footer />
 
     <script>
+      // Copy buttons on code blocks. Progressive: no clipboard API, no button.
+      // Each pre is wrapped in a frame so the button stays put when the code
+      // scrolls horizontally.
+      (function () {
+        if (!navigator.clipboard) return;
+        document.querySelectorAll<HTMLPreElement>('pre.astro-code').forEach((pre) => {
+          const frame = document.createElement('div');
+          frame.className = 'code-frame';
+          pre.replaceWith(frame);
+          frame.appendChild(pre);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'code-copy';
+          btn.textContent = 'Copy';
+          btn.setAttribute('aria-label', 'Copy code to clipboard');
+          frame.appendChild(btn);
+
+          let timer: number | undefined;
+          btn.addEventListener('click', async () => {
+            const code = pre.querySelector('code');
+            try {
+              await navigator.clipboard.writeText(code?.innerText ?? pre.innerText);
+              btn.textContent = 'Copied';
+              btn.classList.add('done');
+              window.clearTimeout(timer);
+              timer = window.setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('done');
+              }, 2000);
+            } catch {
+              btn.textContent = 'Copy failed';
+            }
+          });
+        });
+      })();
+    </script>
+
+    <script>
       // Reveal-on-scroll. Content ships visible; we only arm (hide-then-reveal)
       // when JS runs AND motion is allowed, so prerender/no-JS/reduced-motion
       // never gate content behind a transition that might not fire.

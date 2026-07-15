@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import { vtName } from '../../lib/vt';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) =>
@@ -42,16 +43,16 @@ const linkEntries = Object.entries(links).filter(([, url]) => url);
       class:list={['project', { 'has-accent': accent }]}
       style={accent ? `--accent: ${accent}; --accent-dim: ${accent};` : undefined}
     >
-      <header class="project-header halo fx">
-        <a class="back" href="/projects">← Projects</a>
+      <header class="project-header halo">
+        <a class="back fx" href="/projects">← Projects</a>
         <div class="ptop">
-          <h1>{title}</h1>
+          <h1 style={`view-transition-name: ${vtName('proj', project.id)}`}>{title}</h1>
           <span class:list={['status', status]}>{STATUS_LABELS[status]}</span>
         </div>
         {stack.length > 0 && (
           <div class="stack">{stack.join(' · ')}</div>
         )}
-        <p class="dek">{description}</p>
+        <p class="dek fx d2">{description}</p>
 
         {linkEntries.length > 0 && (
           <div class="links">

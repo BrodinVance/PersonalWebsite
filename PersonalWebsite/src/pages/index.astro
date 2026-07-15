@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroScene from '../components/HeroScene.astro';
 import { TOPIC_LABELS } from '../lib/topics';
+import { vtName } from '../lib/vt';
 
 const allPosts = (
   await getCollection('writing', ({ data }) =>
@@ -84,7 +85,7 @@ const STATUS_LABELS: Record<string, string> = {
               </div>
               <a href={`/writing/${post.id}`}>
                 <div>
-                  <h3>{post.data.title}</h3>
+                  <h3 style={`view-transition-name: ${vtName('post', post.id)}`}>{post.data.title}</h3>
                   <p>{post.data.description}</p>
                 </div>
               </a>
@@ -113,7 +114,7 @@ const STATUS_LABELS: Record<string, string> = {
             >
               <div class="ptop">
                 <a href={`/projects/${project.id}`}>
-                  <h3>{project.data.title}</h3>
+                  <h3 style={`view-transition-name: ${vtName('proj', project.id)}`}>{project.data.title}</h3>
                 </a>
                 <span class:list={['status', project.data.status]}>
                   {STATUS_LABELS[project.data.status]}

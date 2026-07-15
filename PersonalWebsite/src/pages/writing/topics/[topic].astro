@@ -4,6 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { TOPICS } from '../../../content.config';
 import { TOPIC_LABELS } from '../../../lib/topics';
 import type { Topic } from '../../../content.config';
+import { vtName } from '../../../lib/vt';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('writing', ({ data }) =>
@@ -48,7 +49,7 @@ function formatDate(date: Date) {
             </div>
             <a href={`/writing/${post.id}`}>
               <div>
-                <h2>{post.data.title}</h2>
+                <h2 style={`view-transition-name: ${vtName('post', post.id)}`}>{post.data.title}</h2>
                 <p>{post.data.description}</p>
               </div>
             </a>
