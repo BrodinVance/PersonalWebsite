@@ -11,7 +11,7 @@ featured: true
 order: 100
 links:
   github: https://github.com/BrodinVance
-draft: true
+draft: false
 ---
 
 This entry is a template. It documents every project field and shows how each renders, so the next project is just a matter of swapping the contents.
