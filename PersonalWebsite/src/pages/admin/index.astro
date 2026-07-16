@@ -5,6 +5,10 @@ import Editor from '../../components/admin/Editor.tsx';
 ---
 
 <BaseLayout title="Editor" description="Site editor">
+  <script is:inline>
+    // Mark this browser as the site owner so ReadBeacon never counts it.
+    try { localStorage.setItem('bv-admin', '1'); } catch {}
+  </script>
   <div class="admin-shell">
     <Editor client:only="react" />
   </div>

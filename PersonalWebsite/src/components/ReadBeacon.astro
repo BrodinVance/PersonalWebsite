@@ -1,0 +1,37 @@
+---
+// Fires one qualified-read beacon per browser session: after 10 s on the page
+// or 25 % scroll depth, whichever comes first. Silent no-op for the admin
+// (bv-admin flag) and for repeat views in the same session.
+interface Props {
+  type: 'writing' | 'projects';
+  slug: string;
+}
+const { type, slug } = Astro.props;
+---
+
+<script is:inline define:vars={{ type, slug }}>
+  (() => {
+    try {
+      if (localStorage.getItem('bv-admin')) return;
+      const key = `bv-read:${type}/${slug}`;
+      if (sessionStorage.getItem(key)) return;
+      let sent = false;
+      const send = () => {
+        if (sent) return;
+        sent = true;
+        clearTimeout(timer);
+        removeEventListener('scroll', onScroll);
+        sessionStorage.setItem(key, '1');
+        navigator.sendBeacon('/api/views/hit', JSON.stringify({ type, slug }));
+      };
+      const onScroll = () => {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        if (max > 0 && scrollY / max >= 0.25) send();
+      };
+      const timer = setTimeout(send, 10000);
+      addEventListener('scroll', onScroll, { passive: true });
+    } catch {
+      /* storage blocked — count nothing */
+    }
+  })();
+</script>

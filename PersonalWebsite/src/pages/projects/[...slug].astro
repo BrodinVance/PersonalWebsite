@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import { vtName } from '../../lib/vt';
+import ReadBeacon from '../../components/ReadBeacon.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) =>
@@ -38,6 +39,7 @@ const linkEntries = Object.entries(links).filter(([, url]) => url);
 ---
 
 <BaseLayout title={title} description={description} image={`/og/projects/${project.id}.png`}>
+  <ReadBeacon type="projects" slug={project.id} />
   <div class="wrap">
     <article
       class:list={['project', { 'has-accent': accent }]}
