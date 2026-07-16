@@ -276,22 +276,56 @@
   color: var(--ink-faint);
 }
 
-/* editor + preview panes */
-.adm-panes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  align-items: stretch;
-  height: 76vh;
-  min-height: 32rem;
+/* ---------------------------------------------------------------------------
+   The writing desk — one surface that is the post. The bar (mode tabs +
+   toolbar) stays under the site nav while the page scrolls.
+   --------------------------------------------------------------------------- */
+.adm-desk {
+  border-top: 1px solid var(--line-soft);
 }
 
-.adm-editor-col {
+.adm-desk-bar {
+  position: sticky;
+  top: 3.9rem; /* just under the sticky site nav */
+  z-index: 50; /* below --z-sticky (nav) */
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem;
+  background: color-mix(in oklab, oklch(0.21 0.05 265) 88%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.adm-mode-tabs {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.adm-mode-tabs button {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 2px;
+  color: var(--ink-dim);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adm-mode-tabs button.on {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.adm-hidden {
+  display: none;
 }
 
 .adm-toolbar {
@@ -299,9 +333,23 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.5rem;
-  background: var(--bg-raise);
-  border-bottom: 1px solid var(--line);
+  flex: 1;
+}
+
+.adm-hints {
+  margin-left: auto;
+  display: flex;
+  gap: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.adm-hints u {
+  text-decoration: none;
+  color: var(--accent-text);
 }
 
 .adm-toolbar button {
@@ -326,9 +374,7 @@
 }
 
 .adm-cm {
-  flex: 1;
-  min-height: 18rem;
-  overflow: auto;
+  min-height: 55vh;
 }
 
 .adm-color {
@@ -355,12 +401,10 @@
 }
 
 .adm-preview {
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--bg);
-  padding: 1.5rem 2rem;
-  overflow: auto;
-  height: 100%;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 2.25rem 1.5rem 6rem;
+  min-height: 55vh;
 }
 
 /* preview prose tweaks (relies on global .prose-like rules being absent here,
@@ -494,18 +538,8 @@
 }
 
 @media (max-width: 760px) {
-  .adm-panes {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .adm-cm {
-    min-height: 50vh;
-  }
-
-  .adm-preview {
-    height: auto;
-    min-height: 50vh;
+  .adm-hints {
+    display: none;
   }
 
   .adm-link-row {

@@ -48,9 +48,23 @@ export default function Editor() {
   const [items, setItems] = useState<ListItem[]>([]);
   const [view, setView] = useState<'list' | 'edit'>('list');
   const [entry, setEntry] = useState<Entry | null>(null);
+  const [mode, setMode] = useState<'write' | 'preview'>('write');
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState('');
   const editorRef = useRef<EditorHandle>(null);
+
+  // ⌘E / Ctrl+E flips Write ⇄ Preview while editing.
+  useEffect(() => {
+    if (view !== 'edit') return;
+    const onKey = (ev: KeyboardEvent) => {
+      if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'e') {
+        ev.preventDefault();
+        setMode((m) => (m === 'write' ? 'preview' : 'write'));
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [view]);
 
   async function loadList(c: Collection) {
     setBusy(true);
@@ -84,6 +98,7 @@ export default function Editor() {
         return;
       }
       setEntry({ data: j.data, body: j.body, slug: j.slug, filename: j.filename, sha: j.sha });
+      setMode('write');
       setView('edit');
     } finally {
       setBusy(false);
@@ -92,6 +107,7 @@ export default function Editor() {
 
   function newEntry() {
     setEntry(emptyEntry(collection));
+    setMode('write');
     setView('edit');
   }
 
@@ -263,16 +279,40 @@ export default function Editor() {
             onChange={(data) => setEntry((e) => (e ? { ...e, data } : e))}
           />
 
-          <div className="adm-panes">
-            <div className="adm-editor-col">
-              <Toolbar editor={editorRef} />
+          <div className="adm-desk">
+            <div className="adm-desk-bar">
+              <div className="adm-mode-tabs" role="tablist" aria-label="Editor mode">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'write'}
+                  className={mode === 'write' ? 'on' : ''}
+                  onClick={() => setMode('write')}
+                >
+                  Write
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'preview'}
+                  className={mode === 'preview' ? 'on' : ''}
+                  onClick={() => setMode('preview')}
+                >
+                  Preview
+                </button>
+              </div>
+              {mode === 'write' && <Toolbar editor={editorRef} />}
+            </div>
+
+            {/* the editor stays mounted through preview so undo history survives */}
+            <div className={mode === 'write' ? undefined : 'adm-hidden'}>
               <MarkdownEditor
                 ref={editorRef}
                 value={entry.body}
                 onChange={(body) => setEntry((e) => (e ? { ...e, body } : e))}
               />
             </div>
-            <Preview body={entry.body} accent={entry.data.accent} />
+            {mode === 'preview' && <Preview body={entry.body} accent={entry.data.accent} />}
           </div>
 
           <div className="adm-actions">

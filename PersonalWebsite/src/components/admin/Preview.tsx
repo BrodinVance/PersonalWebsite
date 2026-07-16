@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkRehype from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
@@ -14,6 +15,7 @@ import { remarkBlankLineSpacing } from '../../lib/remark-blank-line-spacing.mjs'
 // exactly as they will on the live post.
 const processor = unified()
   .use(remarkParse)
+  .use(remarkGfm) // production renders GFM (footnotes, strikethrough, tables)
   .use(remarkMath)
   .use(remarkBlankLineSpacing)
   .use(remarkRehype, { allowDangerousHtml: true })
