@@ -1,5 +1,5 @@
 ---
-title: Distill.pub Style Article on Disproving Local Realism and Hidden-Variables
+title: 'Bell''s Theorem in CHSH Form: An Interactive Derivation '
 status: building
 year: 2026
 featured: false
