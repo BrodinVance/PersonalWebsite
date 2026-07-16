@@ -133,8 +133,8 @@ function sparkPath(series: number[], w: number, h: number, pad = 2): string {
         <p>
           Read counting isn’t set up yet. Provision <strong>Upstash Redis</strong> on the Vercel
           project (Marketplace &rarr; Upstash, free tier) — it injects
-          <code>UPSTASH_REDIS_REST_URL</code> and <code>UPSTASH_REDIS_REST_TOKEN</code>
-          automatically. Redeploy and reads start counting.
+          <code>KV_REST_API_URL</code> and <code>KV_REST_API_TOKEN</code> automatically
+          (the <code>UPSTASH_REDIS_REST_*</code> names work too). Redeploy and reads start counting.
         </p>
       </div>
     )}

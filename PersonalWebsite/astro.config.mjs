@@ -63,6 +63,9 @@ export default defineConfig({
       VERCEL_DEPLOY_HOOK_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
       UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
       UPSTASH_REDIS_REST_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Names the Vercel Marketplace Upstash integration injects.
+      KV_REST_API_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      KV_REST_API_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 });

@@ -13,15 +13,21 @@ import {
   type ViewType,
 } from './views-core';
 
+// The Vercel Marketplace Upstash integration injects KV_-prefixed names;
+// standalone Upstash uses UPSTASH_REDIS_-prefixed ones. Accept either.
+function creds(): { url: string; token: string } | null {
+  const url = getSecret('UPSTASH_REDIS_REST_URL') || getSecret('KV_REST_API_URL');
+  const token = getSecret('UPSTASH_REDIS_REST_TOKEN') || getSecret('KV_REST_API_TOKEN');
+  return url && token ? { url, token } : null;
+}
+
 function client(): Redis | null {
-  const url = getSecret('UPSTASH_REDIS_REST_URL');
-  const token = getSecret('UPSTASH_REDIS_REST_TOKEN');
-  if (!url || !token) return null;
-  return new Redis({ url, token });
+  const c = creds();
+  return c ? new Redis(c) : null;
 }
 
 export function viewsConfigured(): boolean {
-  return !!(getSecret('UPSTASH_REDIS_REST_URL') && getSecret('UPSTASH_REDIS_REST_TOKEN'));
+  return creds() !== null;
 }
 
 export interface ViewStats {
