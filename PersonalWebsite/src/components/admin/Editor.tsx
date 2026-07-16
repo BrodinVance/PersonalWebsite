@@ -5,7 +5,13 @@ import { Preview } from './Preview';
 import { FrontmatterForm } from './FrontmatterForm';
 import './admin.css';
 
-type Collection = 'writing' | 'projects';
+type Collection = 'writing' | 'projects' | 'pages';
+
+const COLLECTION_LABELS: Record<Collection, string> = {
+  writing: 'Writing',
+  projects: 'Projects',
+  pages: 'Pages',
+};
 
 interface Entry {
   data: Record<string, any>;
@@ -186,7 +192,7 @@ export default function Editor() {
 
   async function save(publishOverride?: boolean) {
     if (!entry) return;
-    if (!entry.data.title?.trim()) {
+    if (collection !== 'pages' && !entry.data.title?.trim()) {
       flashToast('A title is required.');
       return;
     }
@@ -213,7 +219,7 @@ export default function Editor() {
     <div className="adm">
       <header className="adm-top">
         <div className="adm-tabs">
-          {(['writing', 'projects'] as Collection[]).map((c) => (
+          {(['writing', 'projects', 'pages'] as Collection[]).map((c) => (
             <button
               key={c}
               type="button"
@@ -224,7 +230,7 @@ export default function Editor() {
                 setEntry(null);
               }}
             >
-              {c === 'writing' ? 'Writing' : 'Projects'}
+              {COLLECTION_LABELS[c]}
             </button>
           ))}
         </div>
@@ -248,10 +254,12 @@ export default function Editor() {
       {view === 'list' && (
         <section className="adm-list">
           <div className="adm-list-head">
-            <h1>{collection === 'writing' ? 'Writing' : 'Projects'}</h1>
-            <button type="button" className="adm-primary" onClick={newEntry}>
-              + New {collection === 'writing' ? 'post' : 'project'}
-            </button>
+            <h1>{COLLECTION_LABELS[collection]}</h1>
+            {collection !== 'pages' && (
+              <button type="button" className="adm-primary" onClick={newEntry}>
+                + New {collection === 'writing' ? 'post' : 'project'}
+              </button>
+            )}
           </div>
           {busy && <p className="adm-muted">Loading…</p>}
           {!busy && items.length === 0 && <p className="adm-muted">No entries yet.</p>}
@@ -259,12 +267,13 @@ export default function Editor() {
             {items.map((it) => (
               <li key={it.filename}>
                 <button type="button" onClick={() => openEntry(it.slug)}>
-                  <span className="adm-entry-title">{it.data.title || it.slug}</span>
+                  <span className="adm-entry-title">
+                    {it.data.title || it.slug.charAt(0).toUpperCase() + it.slug.slice(1)}
+                  </span>
                   <span className="adm-entry-meta">
-                    {it.data.draft ? 'hidden · ' : ''}
-                    {it.data.date || it.data.status || ''}
-                    {' · '}
-                    {it.filename}
+                    {collection === 'pages'
+                      ? it.filename
+                      : `${it.data.draft ? 'hidden · ' : ''}${it.data.date || it.data.status || ''} · ${it.filename}`}
                   </span>
                 </button>
               </li>
@@ -278,10 +287,13 @@ export default function Editor() {
           <FrontmatterForm
             key={`${collection}:${entry.filename ?? 'new'}`}
             collection={collection}
+            slug={entry.slug}
             data={entry.data}
             onChange={(data) => setEntry((e) => (e ? { ...e, data } : e))}
           />
 
+          {/* Home is form-only; its copy lives in frontmatter, not a body. */}
+          {!(collection === 'pages' && entry.slug === 'home') && (
           <div className="adm-desk">
             <div className="adm-desk-bar">
               <div className="adm-mode-tabs" role="tablist" aria-label="Editor mode">
@@ -317,15 +329,16 @@ export default function Editor() {
             </div>
             {mode === 'preview' && <Preview body={entry.body} accent={entry.data.accent} />}
           </div>
+          )}
 
           <div className="adm-actions">
             <div className="adm-actions-left">
-              {entry.filename && (
+              {collection !== 'pages' && entry.filename && (
                 <button type="button" className="adm-danger" disabled={busy} onClick={remove}>
                   Delete
                 </button>
               )}
-              {entry.filename && (
+              {collection !== 'pages' && entry.filename && (
                 <button type="button" className="adm-ghost" disabled={busy} onClick={toggleHidden}>
                   {entry.data.draft ? 'Make public' : 'Hide'}
                 </button>

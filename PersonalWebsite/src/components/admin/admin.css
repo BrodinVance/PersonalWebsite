@@ -537,6 +537,30 @@
   border-color: var(--accent-dim);
 }
 
+/* Ordered one-line string list (home "Currently" items) */
+.adm-strlist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.adm-strlist-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.adm-link-remove:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.adm-link-remove:disabled:hover {
+  color: var(--ink-faint);
+  border-color: var(--line);
+}
+
 @media (max-width: 760px) {
   .adm-hints {
     display: none;

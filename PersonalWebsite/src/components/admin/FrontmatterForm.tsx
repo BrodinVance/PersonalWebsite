@@ -1,5 +1,6 @@
 import { AccentPicker } from './AccentPicker';
 import { LinksField } from './LinksField';
+import { StringListField } from './StringListField';
 import { TOPIC_LABELS } from '../../lib/topics';
 
 const TOPICS = Object.keys(TOPIC_LABELS) as Array<keyof typeof TOPIC_LABELS>;
@@ -7,10 +8,12 @@ const STATUSES = ['building', 'planned', 'ongoing', 'shipped'];
 
 export function FrontmatterForm({
   collection,
+  slug,
   data,
   onChange,
 }: {
-  collection: 'writing' | 'projects';
+  collection: 'writing' | 'projects' | 'pages';
+  slug?: string;
   data: Record<string, any>;
   onChange: (d: Record<string, any>) => void;
 }) {
@@ -18,19 +21,50 @@ export function FrontmatterForm({
 
   return (
     <div className="adm-form">
-      <label className="adm-field">
-        <span>Title</span>
-        <input value={data.title || ''} onChange={(e) => set('title', e.target.value)} />
-      </label>
+      {collection !== 'pages' && (
+        <>
+          <label className="adm-field">
+            <span>Title</span>
+            <input value={data.title || ''} onChange={(e) => set('title', e.target.value)} />
+          </label>
 
-      <label className="adm-field">
-        <span>Description</span>
-        <textarea
-          rows={2}
-          value={data.description || ''}
-          onChange={(e) => set('description', e.target.value)}
-        />
-      </label>
+          <label className="adm-field">
+            <span>Description</span>
+            <textarea
+              rows={2}
+              value={data.description || ''}
+              onChange={(e) => set('description', e.target.value)}
+            />
+          </label>
+        </>
+      )}
+
+      {collection === 'pages' && slug === 'home' && (
+        <>
+          <label className="adm-field">
+            <span>Hero intro (inline markdown)</span>
+            <textarea
+              rows={4}
+              value={data.intro || ''}
+              onChange={(e) => set('intro', e.target.value)}
+            />
+          </label>
+          <div className="adm-field">
+            <span>Currently</span>
+            <StringListField
+              value={data.currently || []}
+              onChange={(v) => set('currently', v)}
+            />
+          </div>
+        </>
+      )}
+
+      {collection === 'pages' && slug === 'about' && (
+        <div className="adm-field">
+          <span>Elsewhere links</span>
+          <LinksField value={data.links || {}} onChange={(v) => set('links', v)} />
+        </div>
+      )}
 
       {collection === 'writing' && (
         <>
@@ -147,10 +181,12 @@ export function FrontmatterForm({
         </>
       )}
 
-      <div className="adm-field">
-        <span className="adm-label">Accent / theme</span>
-        <AccentPicker value={data.accent} onChange={(v) => set('accent', v)} />
-      </div>
+      {collection !== 'pages' && (
+        <div className="adm-field">
+          <span className="adm-label">Accent / theme</span>
+          <AccentPicker value={data.accent} onChange={(v) => set('accent', v)} />
+        </div>
+      )}
     </div>
   );
 }
