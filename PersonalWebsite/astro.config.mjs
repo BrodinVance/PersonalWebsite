@@ -61,6 +61,8 @@ export default defineConfig({
       GITHUB_REPO: envField.string({ context: 'server', access: 'secret', optional: true }),
       GITHUB_BRANCH: envField.string({ context: 'server', access: 'secret', default: 'main' }),
       VERCEL_DEPLOY_HOOK_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      UPSTASH_REDIS_REST_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      UPSTASH_REDIS_REST_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 });
