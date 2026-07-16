@@ -234,6 +234,9 @@ export default function Editor() {
               ← All {collection}
             </button>
           )}
+          <a className="adm-ghost" href="/admin/analytics">
+            Analytics
+          </a>
           <a className="adm-ghost" href="/api/auth/logout">
             Log out
           </a>

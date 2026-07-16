@@ -1,0 +1,446 @@
+---
+export const prerender = false;
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getStats, viewsConfigured } from '../../lib/views';
+import { fieldFor } from '../../lib/views-core';
+
+const DAYS = 30;
+
+const configured = viewsConfigured();
+let stats: Awaited<ReturnType<typeof getStats>> = null;
+let loadError = false;
+if (configured) {
+  try {
+    stats = await getStats(DAYS);
+  } catch {
+    loadError = true;
+  }
+}
+
+const writing = await getCollection('writing');
+const projects = await getCollection('projects');
+
+interface Row {
+  field: string;
+  type: 'writing' | 'projects';
+  title: string;
+  href: string;
+  draft: boolean;
+  total: number;
+  last30: number;
+  series: number[];
+}
+
+function seriesFor(field: string): number[] {
+  return (stats?.daily ?? []).map((d) => d.counts[field] ?? 0);
+}
+const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+
+const rows: Row[] = [
+  ...writing.map((e) => ({
+    type: 'writing' as const,
+    slug: e.id,
+    title: e.data.title,
+    draft: e.data.draft,
+  })),
+  ...projects.map((e) => ({
+    type: 'projects' as const,
+    slug: e.id,
+    title: e.data.title,
+    draft: e.data.draft,
+  })),
+]
+  .map(({ type, slug, title, draft }) => {
+    const field = fieldFor(type, slug);
+    const series = seriesFor(field);
+    return {
+      field,
+      type,
+      title,
+      draft,
+      href: `/${type}/${slug}`,
+      total: stats?.totals[field] ?? 0,
+      last30: sum(series),
+      series,
+    };
+  })
+  .sort((a, b) => b.total - a.total || a.title.localeCompare(b.title));
+
+const days = (stats?.daily ?? []).map((d) => d.day);
+const siteSeries = (stats?.daily ?? []).map((d) => sum(Object.values(d.counts)));
+const siteTotal = sum(rows.map((r) => r.total));
+const site30 = sum(siteSeries);
+const site7 = sum(siteSeries.slice(-7));
+
+const fmt = (n: number) => n.toLocaleString('en-US');
+function fmtDay(day: string): string {
+  return new Date(`${day}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+// Daily bar geometry (magnitude per day → bars, not a line).
+const CW = 600;
+const CH = 96;
+const PAD = 1;
+const BASE = CH - 1;
+const slot = (CW - PAD * 2) / DAYS;
+const barW = Math.max(2, slot - 2); // ≥2px surface gap between bars
+const siteMax = Math.max(...siteSeries, 1);
+const bars = siteSeries.map((v, i) => {
+  const h = v === 0 ? 0 : Math.max(2, (v / siteMax) * (BASE - 8));
+  return {
+    x: PAD + i * slot + (slot - barW) / 2,
+    y: BASE - h,
+    h,
+    v,
+    day: days[i] ?? '',
+  };
+});
+
+// Per-row mini sparkline path; the numbers live in the table text, so these
+// are decorative context marks.
+function sparkPath(series: number[], w: number, h: number, pad = 2): string {
+  if (series.length < 2) return '';
+  const max = Math.max(...series, 1);
+  const step = (w - pad * 2) / (series.length - 1);
+  return series
+    .map((v, i) => {
+      const x = pad + i * step;
+      const y = h - pad - (v / max) * (h - pad * 2);
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(' ');
+}
+---
+
+<BaseLayout title="Analytics" description="Read counts">
+  <script is:inline>
+    // Mark this browser as the site owner so ReadBeacon never counts it.
+    try { localStorage.setItem('bv-admin', '1'); } catch {}
+  </script>
+  <div class="ana-shell">
+    <header class="ana-head">
+      <h1>Analytics</h1>
+      <a class="ana-back" href="/admin">&larr; Editor</a>
+    </header>
+
+    {!configured && (
+      <div class="ana-empty">
+        <p>
+          Read counting isn’t set up yet. Provision <strong>Upstash Redis</strong> on the Vercel
+          project (Marketplace &rarr; Upstash, free tier) — it injects
+          <code>UPSTASH_REDIS_REST_URL</code> and <code>UPSTASH_REDIS_REST_TOKEN</code>
+          automatically. Redeploy and reads start counting.
+        </p>
+      </div>
+    )}
+    {loadError && (
+      <div class="ana-empty">
+        <p>Couldn’t reach Redis — counts are temporarily unavailable. Try a refresh.</p>
+      </div>
+    )}
+
+    {stats && (
+      <>
+        <section class="ana-tiles" aria-label="Read totals">
+          <div class="tile">
+            <span class="num">{fmt(siteTotal)}</span>
+            <span class="lbl">all-time reads</span>
+          </div>
+          <div class="tile">
+            <span class="num">{fmt(site30)}</span>
+            <span class="lbl">last 30 days</span>
+          </div>
+          <div class="tile">
+            <span class="num">{fmt(site7)}</span>
+            <span class="lbl">last 7 days</span>
+          </div>
+        </section>
+
+        <section class="ana-trend">
+          <h2>Daily reads · last 30 days</h2>
+          <svg
+            viewBox={`0 0 ${CW} ${CH}`}
+            role="img"
+            aria-label={`Daily reads from ${fmtDay(days[0])} to ${fmtDay(days[days.length - 1])}; ${fmt(site30)} total`}
+          >
+            <line x1="0" y1={BASE} x2={CW} y2={BASE} class="baseline" />
+            {bars.map((b) => (
+              <g class="bar">
+                <rect x={b.x} y="0" width={barW} height={CH} class="hit" />
+                {b.h > 0 && <rect x={b.x} y={b.y} width={barW} height={b.h} rx="2" class="fill" />}
+                <title>{`${fmtDay(b.day)} — ${fmt(b.v)} ${b.v === 1 ? 'read' : 'reads'}`}</title>
+              </g>
+            ))}
+          </svg>
+          <div class="ana-axis" aria-hidden="true">
+            <span>{fmtDay(days[0])}</span>
+            <span>{fmtDay(days[days.length - 1])}</span>
+          </div>
+          {site30 === 0 && <p class="ana-note">No reads in the last 30 days yet.</p>}
+        </section>
+
+        <section aria-label="Reads per post">
+          <table class="ana-table">
+            <thead>
+              <tr>
+                <th>Post</th>
+                <th>Type</th>
+                <th class="n">All-time</th>
+                <th class="n">30 days</th>
+                <th class="spark-col">
+                  <span class="visually-hidden">30-day trend</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr>
+                  <td>
+                    <a href={r.href}>{r.title}</a>
+                    {r.draft && <span class="draft">draft</span>}
+                  </td>
+                  <td class="type">{r.type === 'writing' ? 'writing' : 'project'}</td>
+                  <td class="n">{fmt(r.total)}</td>
+                  <td class="n">{fmt(r.last30)}</td>
+                  <td class="spark-col">
+                    <svg viewBox="0 0 120 24" aria-hidden="true">
+                      <path d={sparkPath(r.series, 120, 24)} fill="none" class="spark" />
+                    </svg>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      </>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .ana-shell {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  .ana-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .ana-head h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 2rem;
+    letter-spacing: 0.01em;
+  }
+
+  .ana-back {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    text-decoration: none;
+  }
+
+  .ana-back:hover {
+    color: var(--ink);
+  }
+
+  .ana-empty {
+    background: var(--bg-raise);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    color: var(--ink-dim);
+    max-width: 40rem;
+  }
+
+  .ana-empty code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    color: var(--accent-text);
+  }
+
+  .ana-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .tile {
+    background: var(--bg-raise);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .tile .num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tile .lbl {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ana-trend {
+    margin-bottom: 2.5rem;
+  }
+
+  .ana-trend h2 {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.75rem;
+  }
+
+  .ana-trend svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .baseline {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .bar .fill {
+    fill: var(--accent);
+  }
+
+  .bar .hit {
+    fill: transparent;
+  }
+
+  .bar:hover .fill {
+    fill: var(--ink);
+  }
+
+  .ana-axis {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    margin-top: 0.35rem;
+  }
+
+  .ana-note {
+    color: var(--ink-faint);
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+  }
+
+  .ana-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .ana-table th,
+  .ana-table td {
+    padding: 0.55rem 0.6rem;
+    border-bottom: 1px solid var(--line-soft);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .ana-table th {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ana-table td a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .ana-table td a:hover {
+    color: var(--accent-text);
+  }
+
+  .ana-table .n {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ana-table .type {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .draft {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--ink-faint);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .spark-col {
+    width: 128px;
+  }
+
+  .spark-col svg {
+    width: 120px;
+    height: 24px;
+    display: block;
+  }
+
+  .spark {
+    stroke: var(--accent);
+    stroke-width: 1.5;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 700px) {
+    .ana-shell {
+      padding: 2rem 1rem 3rem;
+    }
+
+    .ana-tiles {
+      grid-template-columns: 1fr;
+    }
+
+    .spark-col {
+      display: none;
+    }
+  }
+</style>
