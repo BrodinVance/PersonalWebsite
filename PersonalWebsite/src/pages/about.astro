@@ -1,5 +1,17 @@
 ---
+import { getEntry, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Admin-editable prose + links (pages/about.md) with hardcoded fallbacks.
+const about = await getEntry('pages', 'about');
+const Content = about ? (await render(about)).Content : null;
+const links = Object.entries(
+  about?.data.links ?? {
+    GitHub: 'https://github.com/BrodinVance',
+    Email: 'mailto:brodin.c.vance@gmail.com',
+    'Read the latest →': '/writing',
+  }
+).filter(([, url]) => url);
 ---
 
 <BaseLayout
@@ -12,22 +24,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h1>About</h1>
       </header>
 
-      <p class="lead fx d2">
-        About me goes here
-      </p>
-
-      <p class="muted fx d2">
-        Right now that means a math degree at Waterloo, a quantum-mechanics self-study track,
-        and a steady stream of side projects across software, games, and the occasional kitchen
-        experiment. This site is the logbook.
-      </p>
+      {Content ? (
+        <div class="about-prose fx d2">
+          <Content />
+        </div>
+      ) : (
+        <p class="lead fx d2">About me goes here</p>
+      )}
 
       <div class="elsewhere fx d3">
         <span class="label">Elsewhere</span>
         <div class="links">
-          <a href="https://github.com/BrodinVance">GitHub</a>
-          <a href="mailto:brodin.c.vance@gmail.com">Email</a>
-          <a href="/writing">Read the latest &rarr;</a>
+          {links.map(([label, url]) => (
+            <a href={url}>{label}</a>
+          ))}
         </div>
       </div>
     </section>
@@ -60,10 +70,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-bottom: 1.4rem;
   }
 
-  .muted {
+  /* Rendered markdown prose: first paragraph reads as the lead, the rest
+     as muted body text. :global — <Content /> output is unscoped. */
+  .about-prose :global(p) {
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--ink-dim);
+    margin-bottom: 1.4rem;
+  }
+
+  .about-prose :global(p:first-of-type) {
+    font-size: 1.32rem;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .about-prose :global(a) {
+    color: var(--accent-text);
+  }
+
+  .about-prose :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .elsewhere {

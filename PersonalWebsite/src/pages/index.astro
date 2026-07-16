@@ -1,8 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroScene from '../components/HeroScene.astro';
 import { TOPIC_LABELS } from '../lib/topics';
+import { renderInline } from '../lib/inline-md';
 import { vtName } from '../lib/vt';
 
 const allPosts = (
@@ -21,6 +22,20 @@ const featuredProjects = (
 )
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.order - a.data.order);
+
+// Admin-editable copy (pages/home.md) with the original hardcoded fallbacks
+// so a missing entry can never break the build.
+const home = await getEntry('pages', 'home');
+const introHtml = await renderInline(
+  home?.data.intro ??
+    "Honours Mathematics Student at University of Waterloo. I build games and software, cook more than is reasonable, and write here about whatever I'm learning — lately, mostly *quantum mechanics*."
+);
+const currentlyItems = await Promise.all(
+  (home?.data.currently?.length
+    ? home.data.currently
+    : ['Heading into **Honours Math** at the University of Waterloo this fall']
+  ).map(renderInline)
+);
 
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10).replace(/-/g, '·');
@@ -41,11 +56,7 @@ const STATUS_LABELS: Record<string, string> = {
 >
   <HeroScene>
     <h1 class="fx d1">Brodin Vance</h1>
-    <p class="lede fx d2">
-      Honours Mathematics Student at University of Waterloo. I build games and software,
-      cook more than is reasonable, and write here about whatever I&rsquo;m learning
-      &mdash; lately, mostly <em>quantum mechanics</em>.
-    </p>
+    <p class="lede fx d2" set:html={introHtml} />
     <a class="cue fx d4" href="#currently">The log &darr;</a>
   </HeroScene>
 
@@ -54,7 +65,9 @@ const STATUS_LABELS: Record<string, string> = {
     <section class="currently fx d3" id="currently">
       <span class="label">Currently</span>
       <ul>
-        <li><span>Heading into <b>Honours Math</b> at the University of Waterloo this fall</span></li>
+        {currentlyItems.map((item) => (
+          <li><span set:html={item} /></li>
+        ))}
       </ul>
     </section>
 
@@ -163,9 +176,15 @@ const STATUS_LABELS: Record<string, string> = {
     max-width: var(--measure);
   }
 
-  .lede em {
+  /* :global — the copy arrives via set:html, outside the scoped-style hash */
+  .lede :global(em) {
     font-style: italic;
     color: var(--accent);
+  }
+
+  .lede :global(strong) {
+    color: var(--ink);
+    font-weight: 500;
   }
 
   .cue {
@@ -232,12 +251,13 @@ const STATUS_LABELS: Record<string, string> = {
     font-size: 1.15em;
   }
 
-  .currently li b {
+  .currently li :global(b),
+  .currently li :global(strong) {
     color: var(--ink);
     font-weight: 500;
   }
 
-  .currently li b.brine {
+  .currently li :global(b.brine) {
     color: var(--brine);
   }
 
