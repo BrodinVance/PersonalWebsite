@@ -9,7 +9,9 @@ const writing = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      description: z.string(),
+      // Tolerant on purpose: the editor enforces a description, but a missing
+      // one must degrade to empty copy, never a failed deploy.
+      description: z.string().default(''),
       date: z.coerce.date(),
       topics: z.array(z.enum(TOPICS)).default([]),
       draft: z.boolean().default(false),
@@ -22,7 +24,8 @@ const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    // Same rationale as the writing schema: never fail the deploy over copy.
+    description: z.string().default(''),
     status: z.enum(['building', 'planned', 'ongoing', 'shipped']),
     stack: z.array(z.string()).default([]),
     year: z.number(),

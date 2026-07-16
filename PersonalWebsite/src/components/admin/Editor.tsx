@@ -196,6 +196,10 @@ export default function Editor() {
       flashToast('A title is required.');
       return;
     }
+    if (collection !== 'pages' && !entry.data.description?.trim()) {
+      flashToast('A description is required — it appears in lists, search results, and link previews.');
+      return;
+    }
     const data = { ...entry.data };
     if (collection === 'writing' && typeof publishOverride === 'boolean') {
       data.draft = !publishOverride;
