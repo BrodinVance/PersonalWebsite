@@ -5,7 +5,7 @@ import { getSecret } from 'astro:env/server';
 // committed under this prefix. This is the load-bearing path constant.
 export const CONTENT_ROOT = 'PersonalWebsite/src/content';
 
-export type Collection = 'writing' | 'projects';
+export type Collection = 'writing' | 'projects' | 'pages';
 
 interface RepoInfo {
   owner: string;

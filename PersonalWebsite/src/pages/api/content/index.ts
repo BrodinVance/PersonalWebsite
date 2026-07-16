@@ -4,7 +4,7 @@ import { parse } from '../../../lib/frontmatter';
 
 export const prerender = false;
 
-const COLLECTIONS: Collection[] = ['writing', 'projects'];
+const COLLECTIONS: Collection[] = ['writing', 'projects', 'pages'];
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), {

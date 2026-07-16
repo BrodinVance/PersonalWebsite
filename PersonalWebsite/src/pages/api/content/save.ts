@@ -6,7 +6,10 @@ import { slugify, extensionFor } from '../../../lib/slug';
 
 export const prerender = false;
 
-const COLLECTIONS: Collection[] = ['writing', 'projects'];
+const COLLECTIONS: Collection[] = ['writing', 'projects', 'pages'];
+// The pages collection has fixed membership: these files can be edited but
+// never created from a title, renamed, or (see delete.ts) removed.
+const PAGE_SLUGS = ['home', 'about'];
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -37,22 +40,34 @@ export const POST: APIRoute = async ({ locals, request }) => {
 
   const { collection, data, body, slug: providedSlug, originalFilename, sha } = payload;
   if (!COLLECTIONS.includes(collection)) return json({ error: 'Invalid collection' }, 400);
-  if (!data?.title) return json({ error: 'Title is required' }, 400);
   if (typeof body !== 'string') return json({ error: 'Body is required' }, 400);
 
-  const slug = (providedSlug && slugify(providedSlug)) || slugify(data.title);
-  if (!slug) return json({ error: 'Could not derive a slug from the title' }, 400);
-
-  const ext = extensionFor(body);
-  const filename = `${slug}.${ext}`;
-  const renamed = !!originalFilename && originalFilename !== filename;
+  let slug: string;
+  let filename: string;
+  let renamed = false;
+  if (collection === 'pages') {
+    // Fixed-membership collection: the slug comes from the client, never a title.
+    if (!providedSlug || !PAGE_SLUGS.includes(providedSlug)) {
+      return json({ error: 'Invalid page' }, 400);
+    }
+    slug = providedSlug;
+    filename = `${slug}.md`;
+  } else {
+    if (!data?.title) return json({ error: 'Title is required' }, 400);
+    slug = (providedSlug && slugify(providedSlug)) || slugify(data.title);
+    if (!slug) return json({ error: 'Could not derive a slug from the title' }, 400);
+    filename = `${slug}.${extensionFor(body)}`;
+    renamed = !!originalFilename && originalFilename !== filename;
+  }
 
   const gh = createGitHub(token);
   const fileContent = serialize(data, body);
   let newSha: string | undefined;
 
-  const collectionLabel = collection === 'writing' ? 'Writing' : 'Project';
-  const commitMessage = `${collectionLabel} "${data.title}" Upload`;
+  const commitMessage =
+    collection === 'pages'
+      ? `Page "${slug.charAt(0).toUpperCase() + slug.slice(1)}" Update`
+      : `${collection === 'writing' ? 'Writing' : 'Project'} "${data.title}" Upload`;
 
   try {
     const result = await gh.saveEntry({
@@ -93,6 +108,11 @@ export const POST: APIRoute = async ({ locals, request }) => {
     }
   }
 
-  const base = collection === 'writing' ? '/writing/' : '/projects/';
-  return json({ ok: true, filename, slug, sha: newSha, url: base + slug, deployTriggered });
+  const url =
+    collection === 'pages'
+      ? slug === 'home'
+        ? '/'
+        : '/about'
+      : (collection === 'writing' ? '/writing/' : '/projects/') + slug;
+  return json({ ok: true, filename, slug, sha: newSha, url, deployTriggered });
 };
