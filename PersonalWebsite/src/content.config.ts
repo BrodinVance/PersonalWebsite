@@ -35,4 +35,15 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { writing, projects };
+// Fixed-membership collection backing the admin-editable page copy
+// (home intro/currently, about prose/links). Slugs: home, about.
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
+  schema: z.object({
+    intro: z.string().optional(),
+    currently: z.array(z.string()).default([]),
+    links: z.record(z.string(), z.string()).default({}),
+  }),
+});
+
+export const collections = { writing, projects, pages };
