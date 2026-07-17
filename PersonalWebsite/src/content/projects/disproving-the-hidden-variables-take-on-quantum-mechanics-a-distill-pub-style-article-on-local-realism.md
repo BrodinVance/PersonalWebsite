@@ -28,6 +28,9 @@ Naturally, the project must start with an introduction of what the subject, or p
 The project will then present the two clashing ideologies of this discussion:
 
 1. The statistical and probabilistic approach to Quantum Mechanics that is most often used today.
-2.  Einstein's, Podolsky's, and Rosen's (EPR) beliefs that Quantum particles must obey "Local Realism". That is to say, they cannot interact faster than the speed of light (Locality) and that instead of probabilities, they posses "***Hidden Variables***" currently unaccessable to us that have predetermined results before measurement (Realism)
+2.  Einstein's, Podolsky's, and Rosen's (EPR) beliefs that Quantum particles must obey "Local Realism". That is to say, they cannot interact faster than the speed of light (Locality) and that instead of probabilities, they possess "***Hidden Variables***" currently unaccessible to us that have predetermined results before measurement (Realism)
 
 ### The Experiment:
+As part of the introduction, we must introduce the very experiment that will be used to disprove Local Realism. This experiment involves everyone's favourite duo, Alice and Bob, an electron emitter, and two detectors. The introduction will explain and show, with a visual, how the electron emitter will be set up to fire two electrons, one into Alice's detector and one into Bob's. Before the experiment, Alice and Bob will each choose two axis angles; the detectors will flip randomly between the two angles with each electron-emitter pulse. Each detector independently measures the electron's spin along the chosen axis. If they measure spin up, they will output +1; if they measure spin down, they will output -1.
+
+## The Classical Take
