@@ -8,7 +8,7 @@ draft: false
 description: A proof against the Einstein Podolsky Rosen Paradox, including Bell's Theorem, plus subsequent work by CHSH and Tsirelson.
 ---
 
-The ultimate goal of this project is to create an interactive webpage in the style of a Distill.pub article that disproves Local Realism in Quantum Mechanics. The article will use similar logical approaches to Bell's Theorem and the works of John Clauser, Michael Horne, Abner Shimony, and Richard Holt (CHSH). Subsequently, we will go on to prove Tsirelson's Bound.
+The ultimate goal of this project is to create an interactive webpage in the style of a Distill.pub article that rules out Local Realism in Quantum Mechanics. The article will use similar logical approaches to Bell's Theorem and the works of John Clauser, Michael Horne, Abner Shimony, and Richard Holt (CHSH). Subsequently, we will go on to prove Tsirelson's Bound.
 
 `Note: The website you're currently on is not the actual project. Once finished, the project will be linked at the top and bottom of the project proposal.`
 
@@ -23,14 +23,28 @@ My aim with this project  is to improve on various skills related to Math, Physi
 
 --- 
 ##  Introduction
-Naturally, the project must start with an introduction of what the subject, or problem in this case, actually is. The introduction will start by acknowledging the fact that it is difficult to choose "**which theory of Quantum Mechanics is right**" due to missing information and how the theory of Quantum Mechanics clashes with General Relativity.
+Naturally, the project must start with an introduction of what the subject, or problem in this case, actually is. The introduction will start by acknowledging the fact that it is difficult to choose "**which interpretation of Quantum Mechanics is right**".
 
-The project will then present the two clashing ideologies of this discussion:
+The project will then present the two clashing positions of this discussion:
 
 1. The statistical and probabilistic approach to Quantum Mechanics that is most often used today.
-2.  Einstein's, Podolsky's, and Rosen's (EPR) beliefs that Quantum particles must obey "Local Realism". That is to say, they cannot interact faster than the speed of light (Locality) and that instead of probabilities, they possess "***Hidden Variables***" currently unaccessible to us that have predetermined results before measurement (Realism)
+2.  Einstein's, Podolsky's, and Rosen's (EPR) beliefs that Quantum particles must obey locality (measurement on one particle cannot affect another particle instantly at space-like distances), that the probabilistic model is incomplete, and that there must exist "**Hidden Variables**" whose properties exist prior and independent of measurement.
 
-### The Experiment:
-As part of the introduction, we must introduce the very experiment that will be used to disprove Local Realism. This experiment involves everyone's favourite duo, Alice and Bob, an electron emitter, and two detectors. The introduction will explain and show, with a visual, how the electron emitter will be set up to fire two electrons, one into Alice's detector and one into Bob's. Before the experiment, Alice and Bob will each choose two axis angles; the detectors will flip randomly between the two angles with each electron-emitter pulse. Each detector independently measures the electron's spin along the chosen axis. If they measure spin up, they will output +1; if they measure spin down, they will output -1.
+## The Experiment:
+As part of the introduction, we must introduce the very experiment that will be used to disprove Local Realism. This experiment involves everyone's favourite duo: Alice and Bob, along with an electron emitter and two Stern-Gerlach magnets. The introduction will explain and show, with a visual, how the electron emitter will be set up to fire two electrons, one into Alice's detector and one into Bob's. Before the experiment, Alice and Bob will each choose two axis angles; the magnets will flip randomly between the two angles with each electron-emitter pulse. Each detector independently measures the electron's spin along the chosen axis. If they measure spin up, they will output +1; if they measure spin down, they will output -1.
 
 ## The Classical Take
+
+classical take goes here
+
+## The Quantum Take
+quantum take goes here
+
+## Tsirelson's Bound
+boung goes here
+
+## Interactive Widget
+widget ideas go here
+
+## Conclusion
+Absolutely wonderful conclusion goes here
