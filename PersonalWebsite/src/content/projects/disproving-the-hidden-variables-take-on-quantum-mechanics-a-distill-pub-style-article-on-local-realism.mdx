@@ -42,8 +42,24 @@ This will be the first section of the proof, where we introduce our variables an
 
 ## Derivation Goes Here:
 
+Classical:
 
+$A_i(a_n, \lambda)$, $B_i(b_n, \lambda)$
 
-$E(A,B) = \sum_{i=1}^{\infty} A_i * B_i$
+$E(a_n,b_n) = \frac{1}{N} \sum_{i=1}^{N} A_i * B_i$
 
 $S = E(a_1,b_1) - E(a_1,b_2) + E(a_2, b_1) + E(a_2,b_2)$
+
+$s = AB - AB' + A'B + A'B'$
+
+$s = A(B - B') + A'(B + B')$
+
+Looking at $B$ and $B'$:
+
+If  $B = B'$, then $B - B' = 0$ and $B + B' = \pm2$
+
+If $B \neq B'$  then $B - B' = \pm2$ and $B + B' = 0$
+
+In both scenarios, $|s| = 2$
+
+Quantum:
